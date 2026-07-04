@@ -1825,4 +1825,48 @@
 
   boot();
 })();
+window.addEventListener('beforeunload', function() {
+    try {
+        const crmData = {
+            users: typeof users !== 'undefined' ? users : [],
+            currentUser: typeof currentUser !== 'undefined' ? currentUser : null,
+            clients: typeof clients !== 'undefined' ? clients : [],
+            leads: typeof leads !== 'undefined' ? leads : [],
+            tasks: typeof tasks !== 'undefined' ? tasks : []
+        };
+        localStorage.setItem('my_crm_saved_data', JSON.stringify(crmData));
+    } catch (e) {
+        console.log("Data saving failed:", e);
+    }
+});
+
+window.addEventListener('DOMContentLoaded', function() {
+    try {
+        const savedData = localStorage.getItem('my_crm_saved_data');
+        if (savedData) {
+            const parsedData = JSON.parse(savedData);
+            
+            if (typeof users !== 'undefined' && parsedData.users) users = parsedData.users;
+            if (typeof clients !== 'undefined' && parsedData.clients) clients = parsedData.clients;
+            if (typeof leads !== 'undefined' && parsedData.leads) leads = parsedData.leads;
+            if (typeof tasks !== 'undefined' && parsedData.tasks) tasks = parsedData.tasks;
+            
+            if (parsedData.currentUser && typeof currentUser !== 'undefined') {
+                currentUser = parsedData.currentUser;
+                setTimeout(() => {
+                    const setupModal = document.getElementById('setupModal');
+                    const loginModal = document.getElementById('loginModal');
+                    if(setupModal) setupModal.style.display = 'none';
+                    if(loginModal) loginModal.style.display = 'none';
+                    
+                    if(typeof showDashboard === 'function') showDashboard();
+                    else if(typeof renderApp === 'function') renderApp();
+                    else if(typeof updateUI === 'function') updateUI();
+                }, 100);
+            }
+        }
+    } catch (e) {
+        console.log("Data loading failed:", e);
+    }
+});
 </script>
