@@ -1,0 +1,2390 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Business CRM</title>
+
+<!-- Cropper.js for logo image cropping -->
+<link href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.1/cropper.min.css" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.1/cropper.min.js"></script>
+
+<!-- Firebase SDK (compat, no build tools needed) -->
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
+<script>
+  const firebaseConfig = {
+    apiKey: "AIzaSyCkdRbj8Bwlm6L2LzOyxoot2Nvl7HT_AP0",
+    authDomain: "agritechcrm-433f8.firebaseapp.com",
+    projectId: "agritechcrm-433f8",
+    storageBucket: "agritechcrm-433f8.firebasestorage.app",
+    messagingSenderId: "888604168481",
+    appId: "1:888604168481:web:ef9c4de9b461147af02e60"
+  };
+  firebase.initializeApp(firebaseConfig);
+  const db = firebase.firestore();
+  const fbAuth = firebase.auth();
+</script>
+</head>
+<body style="margin:0;">
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700;800&family=Inter:wght@400;500;600&display=swap');
+
+  :root{
+    --bg:#F7F7F5;
+    --panel:#FFFFFF;
+    --ink:#1C2620;
+    --ink-soft:#4B5563;
+    --muted:#8A9088;
+    --line:#E7E5DD;
+    --forest:#173620;
+    --forest-2:#1F4A2C;
+    --leaf:#2F6B44;
+    --leaf-soft:#E4EFE6;
+    --amber:#B7791E;
+    --amber-soft:#F7EBD3;
+    --red:#B3261E;
+    --red-soft:#F7E1DF;
+    --blue:#33517E;
+    --blue-soft:#E1E9F5;
+    --radius:12px;
+  }
+  *{box-sizing:border-box;}
+  body{margin:0;}
+  .vc-root{
+    font-family:'Inter',sans-serif;color:var(--ink);min-height:100vh;width:100%;position:relative;
+    background:
+      radial-gradient(circle at 12% 15%, rgba(184,134,46,0.20), transparent 42%),
+      radial-gradient(circle at 88% 12%, rgba(47,107,68,0.22), transparent 48%),
+      radial-gradient(circle at 25% 85%, rgba(47,107,68,0.14), transparent 45%),
+      radial-gradient(circle at 90% 80%, rgba(184,134,46,0.16), transparent 45%),
+      var(--bg);
+    background-attachment:fixed;
+  }
+
+  /* ---------- LOGIN ---------- */
+  .vc-login{display:grid;grid-template-columns:1fr 1fr;min-height:100vh;}
+  .vc-login-hero{
+    position:relative;overflow:hidden;
+    background-size:cover;background-position:center;
+    padding:32px;display:flex;flex-direction:column;justify-content:space-between;color:#EAF2EC;
+  }
+  .vc-login-logo{display:flex;align-items:center;gap:10px;}
+  .vc-logo-box{
+    width:38px;height:38px;border-radius:9px;background:rgba(255,255,255,0.12);
+    display:flex;align-items:center;justify-content:center;flex-shrink:0;
+  }
+  .vc-login-brand{font-family:'Sora',sans-serif;font-weight:700;font-size:16px;color:#fff;line-height:1.2;}
+  .vc-login-sub{font-size:10.5px;letter-spacing:1px;color:#B9CBBF;text-transform:uppercase;}
+  .vc-login-headline{font-family:'Sora',sans-serif;font-weight:800;font-size:34px;line-height:1.18;max-width:420px;}
+  .vc-login-desc{font-size:13.5px;color:#C7D6CC;max-width:360px;margin-top:12px;line-height:1.6;}
+  .vc-login-foot{font-size:11px;color:#8FA598;}
+
+  .vc-login-form-wrap{display:flex;align-items:center;justify-content:center;padding:32px;}
+  .vc-login-form{
+    width:100%;max-width:340px;
+    background:linear-gradient(165deg, rgba(255,255,255,0.7), rgba(255,255,255,0.4));
+    backdrop-filter:blur(22px) saturate(180%);-webkit-backdrop-filter:blur(22px) saturate(180%);
+    border:1px solid rgba(255,255,255,0.6);border-radius:20px;padding:32px;
+    box-shadow:inset 0 1px 1px rgba(255,255,255,0.8), 0 20px 50px rgba(20,40,25,0.1);
+  }
+  .vc-login-form h2{font-family:'Sora',sans-serif;font-weight:700;font-size:24px;margin:0 0 6px;}
+  .vc-login-form p{font-size:13px;color:var(--muted);margin:0 0 26px;}
+  .vc-field{margin-bottom:16px;}
+  .vc-field label{display:block;font-size:11.5px;font-weight:600;color:var(--ink-soft);margin-bottom:6px;}
+  .vc-field input{
+    width:100%;padding:10px 12px;border-radius:10px;border:1px solid rgba(255,255,255,0.5);font-size:13.5px;font-family:'Inter',sans-serif;
+    background:rgba(255,255,255,0.45);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);
+    transition:background .15s ease, border-color .15s ease;
+  }
+  .vc-field input:focus{outline:none;border-color:var(--leaf);background:rgba(255,255,255,0.85);}
+  .vc-pwd-wrap{position:relative;}
+  .vc-pwd-eye{position:absolute;right:10px;top:50%;transform:translateY(-50%);cursor:pointer;color:var(--muted);font-size:13px;user-select:none;}
+  .vc-login-btn{
+    width:100%;padding:12px;border:none;border-radius:8px;background:var(--forest-2);color:#fff;
+    font-family:'Inter',sans-serif;font-weight:600;font-size:13.5px;cursor:pointer;margin-top:6px;
+  }
+  .vc-login-btn:hover{background:var(--forest);}
+  .vc-login-err{color:var(--red);font-size:12px;margin-top:10px;min-height:14px;}
+  .vc-login-hr{border:none;border-top:1px solid var(--line);margin:22px 0;}
+  .vc-login-note{font-size:11px;color:var(--muted);text-align:center;}
+  .vc-login-toggle{font-size:12px;color:var(--leaf);cursor:pointer;text-align:center;margin-top:14px;font-weight:600;}
+
+  /* ---------- APP SHELL ---------- */
+  .vc-app{display:flex;width:100%;min-height:100vh;}
+  .vc-side{
+    width:212px;flex-shrink:0;color:#DCE8DF;padding:20px 14px;
+    display:flex;flex-direction:column;min-height:100vh;
+    background:linear-gradient(165deg, rgba(23,54,32,0.80) 0%, rgba(15,36,22,0.88) 100%);
+    backdrop-filter:blur(24px) saturate(160%);-webkit-backdrop-filter:blur(24px) saturate(160%);
+    border-right:1px solid rgba(255,255,255,0.08);
+    box-shadow:inset -1px 0 0 rgba(255,255,255,0.05), 6px 0 30px rgba(0,0,0,0.12);
+  }
+  .vc-side-top{display:flex;align-items:center;gap:10px;padding:2px 6px 24px;}
+  .vc-side-brand{font-family:'Sora',sans-serif;font-weight:700;font-size:14.5px;color:#fff;line-height:1.25;}
+  .vc-side-brand small{display:block;font-size:9.5px;color:#9CB4A2;letter-spacing:0.8px;font-weight:600;text-transform:uppercase;}
+  .vc-navbtn{
+    display:flex;align-items:center;gap:10px;padding:9px 11px;border-radius:8px;cursor:pointer;
+    font-size:13px;font-weight:500;color:#BFD1C5;transition:background .18s ease,color .18s ease,transform .18s ease;margin-bottom:2px;
+  }
+  .vc-navbtn svg{flex-shrink:0;opacity:0.85;transition:transform .18s ease;}
+  .vc-navbtn:hover{background:rgba(255,255,255,0.06);color:#fff;transform:translateX(3px);}
+  .vc-navbtn:hover svg{transform:scale(1.12);}
+  .vc-navbtn.active{background:var(--leaf);color:#fff;}
+  .vc-navbtn.active:hover{transform:translateX(0);}
+  .vc-side-foot{margin-top:auto;padding-top:14px;border-top:1px solid rgba(255,255,255,0.1);}
+  .vc-side-foot-label{font-size:10px;color:#88A090;}
+  .vc-side-foot-name{font-size:12.5px;font-weight:600;color:#fff;margin:2px 0 8px;}
+  .vc-logout{font-size:11.5px;color:#BFD1C5;cursor:pointer;display:flex;align-items:center;gap:6px;}
+  .vc-logout:hover{color:#fff;}
+
+  .vc-main{flex:1;padding:26px 34px;width:100%;}
+  .vc-topbar{display:flex;justify-content:space-between;align-items:flex-end;margin-bottom:20px;flex-wrap:wrap;gap:12px;}
+  .vc-title{font-family:'Sora',sans-serif;font-weight:700;font-size:23px;}
+  .vc-sub{font-size:12.5px;color:var(--muted);margin-top:2px;}
+  .vc-btn{
+    position:relative;overflow:hidden;isolation:isolate;
+    background:linear-gradient(180deg, rgba(255,255,255,0.22), rgba(255,255,255,0) 55%), linear-gradient(180deg, var(--leaf) 0%, var(--forest-2) 100%);
+    backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);
+    color:#fff;border:1px solid rgba(255,255,255,0.28);padding:9px 18px;border-radius:14px;
+    font-weight:600;font-size:13px;cursor:pointer;font-family:'Inter',sans-serif;
+    box-shadow:inset 0 1px 1px rgba(255,255,255,0.5), inset 0 -6px 10px rgba(0,0,0,0.08), 0 6px 14px rgba(20,40,25,0.22);
+    transition:transform .16s cubic-bezier(.2,.8,.3,1), box-shadow .2s ease, background .2s ease;
+  }
+  .vc-btn:hover{transform:translateY(-2px);box-shadow:inset 0 1px 1px rgba(255,255,255,0.55), inset 0 -6px 10px rgba(0,0,0,0.08), 0 12px 22px rgba(20,40,25,0.28);}
+  .vc-btn:active{transform:translateY(0) scale(0.97);box-shadow:inset 0 1px 1px rgba(255,255,255,0.4), inset 0 -3px 6px rgba(0,0,0,0.12), 0 3px 8px rgba(20,40,25,0.18);}
+  .vc-btn.ghost{
+    background:linear-gradient(180deg, rgba(255,255,255,0.7), rgba(255,255,255,0.35));
+    backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);
+    color:var(--forest-2);border:1px solid rgba(255,255,255,0.6);
+    box-shadow:inset 0 1px 1px rgba(255,255,255,0.8), 0 4px 10px rgba(20,40,25,0.08);
+  }
+  .vc-btn.ghost:hover{background:linear-gradient(180deg, rgba(255,255,255,0.85), var(--leaf-soft));border-color:rgba(255,255,255,0.8);color:var(--forest);box-shadow:inset 0 1px 1px rgba(255,255,255,0.9), 0 10px 20px rgba(20,40,25,0.14);}
+  .vc-btn.sm{padding:6px 12px;font-size:11.5px;border-radius:10px;}
+  .vc-btn.sm:hover{transform:translateY(-1px);}
+  .vc-btn.danger{
+    background:linear-gradient(180deg, rgba(255,255,255,0.5), rgba(247,225,221,0.55));
+    backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);
+    color:var(--red);border:1px solid rgba(255,255,255,0.55);
+    box-shadow:inset 0 1px 1px rgba(255,255,255,0.7), 0 4px 10px rgba(179,38,30,0.08);
+  }
+  .vc-btn.danger:hover{background:linear-gradient(180deg, rgba(255,255,255,0.6), var(--red-soft));box-shadow:inset 0 1px 1px rgba(255,255,255,0.8), 0 10px 20px rgba(179,38,30,0.16);}
+
+  .vc-cards{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:14px;}
+
+  .vc-product-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:16px;}
+  .vc-product-card{
+    background:linear-gradient(165deg, rgba(255,255,255,0.78), rgba(255,255,255,0.5));
+    backdrop-filter:blur(18px) saturate(180%);-webkit-backdrop-filter:blur(18px) saturate(180%);
+    border:1px solid rgba(255,255,255,0.6);border-radius:var(--radius);overflow:hidden;display:flex;flex-direction:column;
+    box-shadow:inset 0 1px 1px rgba(255,255,255,0.7), 0 8px 20px rgba(20,40,25,0.08);
+    transition:transform .2s ease,box-shadow .2s ease,border-color .2s ease;
+  }
+  .vc-product-card:hover{transform:translateY(-4px);box-shadow:inset 0 1px 1px rgba(255,255,255,0.85), 0 16px 32px rgba(20,40,25,0.16);border-color:rgba(255,255,255,0.8);}
+  .vc-product-photo{width:100%;aspect-ratio:4/3;background:rgba(239,236,225,0.6);display:flex;align-items:center;justify-content:center;color:#A8A290;overflow:hidden;}
+  .vc-product-photo img{width:100%;height:100%;object-fit:cover;transition:transform .3s ease;}
+  .vc-product-card:hover .vc-product-photo img{transform:scale(1.06);}
+  .vc-product-body{padding:13px 15px 6px;}
+  .vc-product-name{font-family:'Sora',sans-serif;font-weight:700;font-size:13.5px;margin-bottom:8px;line-height:1.3;min-height:35px;}
+  .vc-product-prices{display:flex;justify-content:space-between;font-size:13px;margin-bottom:6px;}
+  .vc-product-price-label{display:block;font-size:9.5px;text-transform:uppercase;letter-spacing:0.5px;color:var(--muted);font-weight:600;margin-bottom:2px;}
+  .vc-product-stock{font-size:11px;color:var(--muted);margin-bottom:10px;}
+  .vc-product-actions{display:flex;gap:8px;padding:0 15px 14px;}
+  .vc-card{
+    background:linear-gradient(165deg, rgba(255,255,255,0.75), rgba(255,255,255,0.45));
+    backdrop-filter:blur(18px) saturate(180%);-webkit-backdrop-filter:blur(18px) saturate(180%);
+    border:1px solid rgba(255,255,255,0.6);border-radius:var(--radius);padding:16px 18px;display:flex;flex-direction:column;gap:2px;position:relative;
+    box-shadow:inset 0 1px 1px rgba(255,255,255,0.7), 0 8px 20px rgba(20,40,25,0.06);
+  }
+  .vc-card-icon{position:absolute;top:14px;right:14px;width:34px;height:34px;border-radius:9px;display:flex;align-items:center;justify-content:center;background:rgba(228,239,230,0.8);backdrop-filter:blur(6px);}
+  .vc-card-icon.amber{background:rgba(247,235,211,0.85);}
+  .vc-card-icon.blue{background:rgba(225,233,245,0.85);}
+  .vc-card-icon.red{background:rgba(246,225,221,0.85);}
+  .vc-card-label{font-size:10.5px;text-transform:uppercase;letter-spacing:0.6px;color:var(--muted);font-weight:600;}
+  .vc-card-val{font-family:'Sora',sans-serif;font-weight:800;font-size:25px;margin-top:6px;}
+
+  .vc-panels{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:6px;}
+  .vc-panel{
+    background:linear-gradient(165deg, rgba(255,255,255,0.72), rgba(255,255,255,0.42));
+    backdrop-filter:blur(18px) saturate(180%);-webkit-backdrop-filter:blur(18px) saturate(180%);
+    border:1px solid rgba(255,255,255,0.6);border-radius:var(--radius);padding:18px;
+    box-shadow:inset 0 1px 1px rgba(255,255,255,0.7), 0 8px 20px rgba(20,40,25,0.06);
+  }
+  .vc-panel-full{grid-column:1/-1;}
+  .vc-panel-title{font-family:'Sora',sans-serif;font-weight:700;font-size:14.5px;margin-bottom:12px;display:flex;justify-content:space-between;align-items:center;}
+  .vc-row{display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid #F0EFE9;}
+  .vc-row:last-child{border-bottom:none;}
+  .vc-row-name{font-weight:600;font-size:13px;}
+  .vc-row-sub{font-size:11.5px;color:var(--muted);margin-top:1px;}
+  .vc-row-right{text-align:right;}
+
+  .vc-badge{display:inline-block;padding:3px 10px;border-radius:20px;font-size:10.5px;font-weight:700;text-transform:lowercase;}
+  .vc-badge.new{background:var(--blue-soft);color:var(--blue);}
+  .vc-badge.contacted{background:var(--amber-soft);color:var(--amber);}
+  .vc-badge.qualified{background:#EFE6F5;color:#6B4E8C;}
+  .vc-badge.won{background:var(--leaf-soft);color:var(--leaf);}
+  .vc-badge.lost{background:var(--red-soft);color:var(--red);}
+  .vc-badge.paid{background:var(--leaf-soft);color:var(--leaf);}
+  .vc-badge.pending{background:var(--amber-soft);color:var(--amber);}
+  .vc-badge.lead{background:var(--amber-soft);color:var(--amber);}
+  .vc-badge.customer{background:var(--leaf-soft);color:var(--leaf);}
+  .vc-badge.done{background:var(--leaf-soft);color:var(--leaf);}
+  .vc-badge.overdue{background:var(--red-soft);color:var(--red);}
+  .vc-badge.today{background:var(--amber-soft);color:var(--amber);}
+  .vc-badge.upcoming{background:var(--blue-soft);color:var(--blue);}
+  .vc-badge.src{background:#EEF0EA;color:#54614D;text-transform:none;font-weight:600;}
+  .vc-badge.followup{background:var(--amber-soft);color:var(--amber);}
+  .vc-badge.imp{background:var(--amber-soft);color:var(--amber);}
+  .vc-badge.most-important{background:var(--red-soft);color:var(--red);}
+  .vc-badge.cnr{background:var(--amber-soft);color:var(--amber);}
+  .vc-badge.number-off{background:#EEECE4;color:#6B6558;}
+  .vc-badge.dnd{background:var(--red-soft);color:var(--red);}
+  .vc-badge.order-done{background:var(--leaf-soft);color:var(--leaf);}
+
+  .vc-status-dd{position:relative;display:inline-block;}
+  .vc-status-trigger{
+    display:inline-flex;align-items:center;gap:6px;border:none;cursor:pointer;font-family:'Inter',sans-serif;
+    padding:5px 10px;border-radius:20px;font-size:11px;font-weight:700;line-height:1;
+  }
+  .vc-status-trigger svg{opacity:0.65;flex-shrink:0;}
+  .vc-status-menu{
+    position:absolute;top:calc(100% + 6px);left:50%;transform:translateX(-50%);
+    background:linear-gradient(165deg, rgba(255,255,255,0.92), rgba(255,255,255,0.82));
+    backdrop-filter:blur(20px) saturate(180%);-webkit-backdrop-filter:blur(20px) saturate(180%);
+    border-radius:12px;
+    box-shadow:inset 0 1px 1px rgba(255,255,255,0.9), 0 16px 34px rgba(20,40,25,0.18), 0 3px 8px rgba(20,40,25,0.08);
+    padding:6px;min-width:168px;z-index:60;display:none;border:1px solid rgba(255,255,255,0.7);text-align:left;
+  }
+  .vc-status-menu.open{display:block;}
+  .vc-status-option{
+    display:flex;align-items:center;gap:9px;padding:8px 10px;border-radius:8px;font-size:12px;font-weight:600;
+    cursor:pointer;color:var(--ink-soft);
+  }
+  .vc-status-option:hover{background:#F5F4EE;}
+  .vc-status-option.active{color:var(--ink);background:#F0EFE4;}
+  .vc-status-option .vc-status-label{flex:1;}
+  .vc-status-dot{width:7px;height:7px;border-radius:50%;flex-shrink:0;}
+  .vc-filter-trigger{
+    background:linear-gradient(180deg, rgba(255,255,255,0.75), rgba(255,255,255,0.4));
+    backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);
+    color:var(--ink-soft);border:1px solid rgba(255,255,255,0.6)!important;font-weight:600;
+    box-shadow:inset 0 1px 1px rgba(255,255,255,0.8), 0 3px 8px rgba(20,40,25,0.08);
+    min-width:150px;justify-content:space-between;padding:8px 12px;transition:transform .15s cubic-bezier(.2,.8,.3,1), box-shadow .2s ease;
+  }
+  .vc-filter-trigger:hover{transform:translateY(-2px);box-shadow:inset 0 1px 1px rgba(255,255,255,0.9), 0 8px 16px rgba(20,40,25,0.14);}
+  .vc-filter-trigger svg{opacity:0.5;}
+  .vc-iconbtn{
+    display:inline-flex;align-items:center;justify-content:center;width:28px;height:28px;border-radius:50%;
+    border:1px solid rgba(255,255,255,0.6);text-decoration:none;margin-left:4px;vertical-align:middle;
+    background:linear-gradient(180deg, rgba(255,255,255,0.75), rgba(255,255,255,0.35));
+    backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);color:var(--ink-soft);
+    box-shadow:inset 0 1px 1px rgba(255,255,255,0.8), 0 3px 8px rgba(20,40,25,0.1);
+    transition:transform .15s cubic-bezier(.2,.8,.3,1), box-shadow .2s ease;
+  }
+  .vc-iconbtn:hover{transform:translateY(-2px);box-shadow:inset 0 1px 1px rgba(255,255,255,0.9), 0 8px 16px rgba(20,40,25,0.18);}
+  .vc-iconbtn:active{transform:translateY(0) scale(0.94);}
+  .vc-iconbtn.wa{color:var(--leaf);background:linear-gradient(180deg, rgba(255,255,255,0.75), var(--leaf-soft));}
+  .vc-iconbtn.wa:hover{box-shadow:inset 0 1px 1px rgba(255,255,255,0.9), 0 8px 16px rgba(47,107,68,0.22);}
+
+  table.vc-table{width:100%;border-collapse:collapse;font-size:14px;}
+  table.vc-table th{text-align:center;font-size:11.5px;text-transform:uppercase;letter-spacing:0.5px;color:var(--muted);padding:12px 12px;border-bottom:1px solid var(--line);font-weight:600;}
+  table.vc-table td{padding:15px 12px;border-bottom:1px solid #F0EFE9;vertical-align:middle;text-align:center;}
+  table.vc-table tr:last-child td{border-bottom:none;}
+  table.vc-table tr:hover td{background:#FAFAF7;}
+  .vc-empty{padding:34px 10px;text-align:center;color:var(--muted);font-size:13px;}
+  .vc-empty b{display:block;color:var(--ink-soft);font-size:14px;margin-bottom:4px;}
+  .vc-search{
+    padding:8px 12px;border-radius:10px;border:1px solid rgba(255,255,255,0.55);font-size:12.5px;width:220px;font-family:'Inter',sans-serif;
+    background:rgba(255,255,255,0.55);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);
+    box-shadow:inset 0 1px 1px rgba(255,255,255,0.6);
+  }
+  .vc-mini-date{
+    padding:5px 7px;border-radius:8px;border:1px solid rgba(255,255,255,0.55);font-size:11.5px;font-family:'Inter',sans-serif;width:130px;
+    background:rgba(255,255,255,0.55);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);
+  }
+
+  .vc-overlay{position:fixed;inset:0;background:rgba(15,25,18,0.32);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);display:flex;align-items:center;justify-content:center;z-index:50;}
+  .vc-modal{
+    background:linear-gradient(165deg, rgba(255,255,255,0.9), rgba(255,255,255,0.78));
+    backdrop-filter:blur(28px) saturate(180%);-webkit-backdrop-filter:blur(28px) saturate(180%);
+    border:1px solid rgba(255,255,255,0.7);border-radius:18px;padding:24px;width:380px;max-width:92vw;max-height:88vh;overflow-y:auto;
+    box-shadow:inset 0 1px 1px rgba(255,255,255,0.9), 0 24px 60px rgba(15,25,18,0.3);
+  }
+  .vc-modal h3{font-family:'Sora',sans-serif;margin:0 0 16px;font-size:16px;}
+  .vc-modal select,.vc-modal textarea{
+    width:100%;padding:8px 10px;border-radius:10px;border:1px solid rgba(255,255,255,0.5);font-family:'Inter',sans-serif;font-size:13px;
+    background:rgba(255,255,255,0.45);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);
+  }
+  .vc-modal textarea{resize:vertical;min-height:60px;}
+  .vc-modal-actions{display:flex;gap:8px;margin-top:18px;justify-content:flex-end;}
+
+  .vc-quot-page{background:#fff;border-radius:10px;padding:36px 40px;width:800px;max-width:95vw;max-height:92vh;overflow-y:auto;}
+  .vc-quot-top{display:flex;justify-content:space-between;align-items:flex-start;padding-bottom:16px;border-bottom:3px solid var(--forest);margin-bottom:16px;gap:16px;}
+  .vc-quot-company-name{font-family:'Sora',sans-serif;font-weight:800;font-size:24px;color:var(--forest);letter-spacing:0.2px;line-height:1.15;}
+  .vc-quot-tagline{font-family:'Sora',sans-serif;font-weight:700;font-size:11.5px;color:var(--amber);margin:3px 0 8px;}
+  .vc-quot-companyinfo{font-size:11px;color:var(--ink-soft);line-height:1.75;}
+  .vc-quot-companyinfo b{color:var(--ink);}
+  .vc-quot-badge{background:var(--forest);color:#fff;font-weight:700;font-size:11.5px;padding:8px 14px;border-radius:6px;text-align:center;margin-bottom:10px;letter-spacing:0.4px;}
+  .vc-quot-meta2{font-size:11px;color:var(--ink-soft);line-height:1.8;}
+  .vc-quot-meta2 b{color:var(--ink);}
+
+  .vc-quot-clientbox{border:1px solid var(--line);border-radius:8px;padding:14px 16px;margin-bottom:16px;background:#FAFAF6;}
+  .vc-quot-clientbox-title{font-weight:700;font-size:11px;color:var(--forest);text-transform:uppercase;letter-spacing:0.4px;margin-bottom:10px;}
+  .vc-quot-client-grid{display:grid;grid-template-columns:1fr 1fr;gap:5px 20px;font-size:11.5px;color:var(--ink-soft);line-height:1.7;}
+  .vc-quot-client-grid b{color:var(--ink);}
+
+  .vc-quot-items-table{width:100%;border-collapse:collapse;margin-bottom:16px;}
+  .vc-quot-items-table th{background:var(--forest);color:#fff;font-size:10px;text-transform:uppercase;letter-spacing:0.3px;padding:9px 8px;text-align:left;}
+  .vc-quot-items-table td{padding:10px 8px;border-bottom:1px solid #EEEBE2;font-size:11.5px;vertical-align:top;color:var(--ink-soft);}
+  .vc-quot-items-table td b{color:var(--ink);}
+  .vc-quot-items-table .specs{font-size:10px;color:var(--muted);margin-top:3px;line-height:1.6;}
+
+  .vc-quot-footer-grid{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-bottom:16px;align-items:start;}
+  .vc-quot-bank{border:1px solid var(--line);border-radius:8px;padding:13px 15px;font-size:11px;color:var(--ink-soft);line-height:1.8;background:#FAFAF6;}
+  .vc-quot-bank b{color:var(--ink);}
+  .vc-quot-booking-note{background:var(--amber-soft);border-radius:6px;padding:9px 11px;font-size:10.5px;color:#7A5200;margin-top:10px;line-height:1.5;}
+
+  .vc-quot-totals{border:1px solid var(--line);border-radius:8px;overflow:hidden;}
+  .vc-quot-totals-row{display:flex;justify-content:space-between;padding:8px 14px;font-size:11.5px;border-bottom:1px solid #F0EFE9;color:var(--ink-soft);}
+  .vc-quot-totals-row.grand{background:var(--forest);color:#fff;font-weight:700;font-size:14px;border-bottom:none;}
+  .vc-quot-words{font-size:9.5px;color:var(--muted);text-align:right;padding:6px 14px;font-style:italic;}
+
+  .vc-quot-terms{border:1px solid var(--line);border-radius:8px;padding:14px 16px;margin-bottom:22px;}
+  .vc-quot-terms-title{font-weight:700;font-size:11px;margin-bottom:8px;color:var(--ink);}
+  .vc-quot-terms ul{margin:0;padding-left:16px;}
+  .vc-quot-terms li{font-size:10.5px;color:var(--ink-soft);line-height:1.7;margin-bottom:3px;}
+
+  .vc-quot-sign{display:flex;justify-content:space-between;align-items:flex-end;margin-top:6px;font-size:11px;color:var(--ink-soft);}
+  .vc-quot-sign-line{border-top:1px solid var(--ink-soft);padding-top:6px;width:220px;text-align:center;}
+  .vc-quot-actions{display:flex;justify-content:flex-end;gap:8px;margin-top:24px;}
+  @media print{
+    body *{visibility:hidden;}
+    .vc-quot-page, .vc-quot-page *{visibility:visible;}
+    .vc-quot-page{position:absolute;top:0;left:0;width:100%;max-height:none;box-shadow:none;}
+    .vc-quot-actions{display:none;}
+  }
+
+  @media (max-width:900px){
+    .vc-login{grid-template-columns:1fr;}
+    .vc-login-hero{min-height:220px;}
+    .vc-app{flex-direction:column;}
+    .vc-side{width:100%;min-height:auto;flex-direction:row;overflow-x:auto;padding:12px;align-items:center;}
+    .vc-side-top,.vc-side-foot{display:none;}
+    .vc-cards{grid-template-columns:repeat(2,1fr);}
+    .vc-panels{grid-template-columns:1fr;}
+    .vc-main{padding:18px;}
+  }
+</style>
+
+<div class="vc-root" id="vcRoot"></div>
+<div id="recaptcha-container"></div>
+
+<script>
+(function(){
+  const ICONS = {
+    leaf:`<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 20A7 7 0 0 1 4 13c0-4 5-9 8-11 3 2 8 7 8 11a7 7 0 0 1-7 7z"/><path d="M12 22V8"/></svg>`,
+    dashboard:`<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="9" rx="1.5"/><rect x="14" y="3" width="7" height="5" rx="1.5"/><rect x="14" y="12" width="7" height="9" rx="1.5"/><rect x="3" y="16" width="7" height="5" rx="1.5"/></svg>`,
+    users:`<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="9" cy="8" r="3.2"/><path d="M2.5 20c0-3.6 3-6 6.5-6s6.5 2.4 6.5 6"/><circle cx="17" cy="8.5" r="2.6"/><path d="M15.5 14.2c2.6.3 4.5 2.3 4.5 5.3"/></svg>`,
+    box:`<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 8l-9-5-9 5 9 5 9-5z"/><path d="M3 8v8l9 5 9-5V8"/><path d="M12 13v8"/></svg>`,
+    target:`<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="8.5"/><circle cx="12" cy="12" r="4.5"/><circle cx="12" cy="12" r="0.8" fill="currentColor"/></svg>`,
+    trend:`<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 17l6-6 4 4 8-8"/><path d="M15 7h6v6"/></svg>`,
+    bell:`<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8a6 6 0 0 0-12 0c0 5-2 6-2 6h16s-2-1-2-6"/><path d="M10 21a2 2 0 0 0 4 0"/></svg>`,
+    rupee:`<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 4h11M6 8h11M6 12h5a4 4 0 0 0 0-8"/><path d="M6 12l8 9"/></svg>`,
+    clock:`<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3.5 2"/></svg>`,
+    logout:`<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><path d="M16 17l5-5-5-5"/><path d="M21 12H9"/></svg>`,
+    eye:`<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7-11-7-11-7z"/><circle cx="12" cy="12" r="3"/></svg>`,
+    shield:`<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3l7 3v6c0 4.5-3 7.5-7 9-4-1.5-7-4.5-7-9V6l7-3z"/><path d="M9 12l2 2 4-4"/></svg>`,
+    lock:`<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="10" width="16" height="10" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></svg>`,
+    phone:`<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3.1 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.1 4.2 2 2 0 0 1 4 2h3a2 2 0 0 1 2 1.7c.1.9.3 1.8.6 2.7a2 2 0 0 1-.4 2.1L8 9.8a16 16 0 0 0 6 6l1.3-1.3a2 2 0 0 1 2.1-.4c.9.3 1.8.5 2.7.6a2 2 0 0 1 1.9 2.2z"/></svg>`,
+    chat:`<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 11.5a8.4 8.4 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.4 8.4 0 0 1-3.8-.9L3 21l1.9-5.7a8.4 8.4 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.4 8.4 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg>`,
+    check:`<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M20 6L9 17l-5-5"/></svg>`,
+    chevron:`<svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M6 9l6 6 6-6"/></svg>`,
+    productPlaceholder:`<svg width="56" height="56" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M21 8l-9-5-9 5 9 5 9-5z"/><path d="M3 8v8l9 5 9-5V8"/><path d="M12 13v8"/></svg>`,
+    image:`<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg>`,
+    reports:`<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 20V10"/><path d="M12 20V4"/><path d="M20 20v-7"/></svg>`,
+    quote:`<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/><path d="M9 13h6M9 17h6"/></svg>`,
+    gear:`<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>`,
+    send:`<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 2L11 13"/><path d="M22 2l-7 20-4-9-9-4 20-7z"/></svg>`,
+  };
+
+  const root = document.getElementById('vcRoot');
+  let session = null; // {username, name, role} — kept only in memory, resets on reload (by design, no browser storage)
+  let users = []; // [{id, username, password, name, role}]
+
+  const NAV = [
+    {key:'dashboard', label:'Dashboard', icon:'dashboard'},
+    {key:'customers', label:'Customers', icon:'users'},
+    {key:'products', label:'Products', icon:'box'},
+    {key:'leads', label:'Leads', icon:'target'},
+    {key:'quotations', label:'Quotations', icon:'quote'},
+    {key:'sales', label:'Orders', icon:'trend'},
+    {key:'followups', label:'Follow-ups', icon:'bell'},
+    {key:'reports', label:'Reports', icon:'reports', adminOnly:true},
+    {key:'settings', label:'Settings', icon:'gear', adminOnly:true},
+  ];
+  const LEAD_STATUSES = [
+    {key:'followup', label:'Followup'},
+    {key:'imp', label:'IMP'},
+    {key:'most-important', label:'Most Important'},
+    {key:'cnr', label:'CNR'},
+    {key:'number-off', label:'Number Off'},
+    {key:'dnd', label:'DND'},
+    {key:'order-done', label:'Order Done'},
+  ];
+  const LEAD_SOURCES = ['IndiaMART','Meta Ads','Google Ads','WhatsApp','Referral','Walk-in','Other'];
+  const LOSS_REASONS = ['Price too high','Went with a competitor','Order/Plan cancelled','Budget issue','Not interested anymore','No response after multiple attempts','Other'];
+  function statusLabel(key){ const s=LEAD_STATUSES.find(x=>x.key===key); return s?s.label:key; }
+  function cleanPhone(p){ let d=(p||'').replace(/\D/g,''); if(d.length>10) d=d.slice(-10); return d; }
+  function matchRoutingRule(leadState, leadProduct){
+    const st = (leadState||'').toLowerCase().trim();
+    const prod = (leadProduct||'').toLowerCase();
+    for(const r of state.routingRules){
+      const rState = (r.state||'').toLowerCase().trim();
+      const rKeyword = (r.productKeyword||'').toLowerCase().trim();
+      if(!rState && !rKeyword) continue;
+      const stateMatches = !rState || rState===st;
+      const prodMatches = !rKeyword || prod.includes(rKeyword);
+      if(stateMatches && prodMatches) return r.assignTo;
+    }
+    return null;
+  }
+
+  const STATUS_DOT_COLOR = {
+    followup:'var(--amber)', imp:'var(--amber)', 'most-important':'var(--red)', cnr:'var(--amber)',
+    'number-off':'#6B6558', dnd:'var(--red)', 'order-done':'var(--leaf)',
+    pending:'var(--amber)', paid:'var(--leaf)',
+  };
+  function statusDotColor(key){ return STATUS_DOT_COLOR[key] || 'var(--muted)'; }
+
+  function isCurrentMonth(dateStr){
+    if(!dateStr) return false;
+    const d = new Date(dateStr); const now = new Date();
+    return d.getFullYear()===now.getFullYear() && d.getMonth()===now.getMonth();
+  }
+  function isLastNDays(dateStr, n){
+    if(!dateStr) return false;
+    const d = new Date(dateStr); const now = new Date();
+    const diff = (now - d) / (1000*60*60*24);
+    return diff>=0 && diff<=n;
+  }
+  function polarToXY(cx,cy,r,angleDeg){
+    const rad = angleDeg*Math.PI/180;
+    return { x: cx + r*Math.cos(rad), y: cy - r*Math.sin(rad) };
+  }
+  function describeArc(cx,cy,r,startAngle,endAngle){
+    const start = polarToXY(cx,cy,r,startAngle);
+    const end = polarToXY(cx,cy,r,endAngle);
+    const largeArc = Math.abs(startAngle-endAngle) > 180 ? 1 : 0;
+    return `M ${start.x} ${start.y} A ${r} ${r} 0 ${largeArc} 1 ${end.x} ${end.y}`;
+  }
+  function renderGaugeSVG(pct, color){
+    const bgPath = describeArc(100,100,80,180,0);
+    const endAngle = 180 - Math.min(100,Math.max(0,pct))/100*180;
+    const fgPath = describeArc(100,100,80,180,endAngle);
+    return `<svg viewBox="0 0 200 112" style="width:100%;max-width:220px;display:block;margin:0 auto;">
+      <path d="${bgPath}" stroke="#E7E2D3" stroke-width="16" fill="none" stroke-linecap="round"/>
+      <path d="${fgPath}" stroke="${color}" stroke-width="16" fill="none" stroke-linecap="round"/>
+    </svg>`;
+  }
+  function computeLeaderboard(){
+    const counts = {};
+    state.sales.forEach(s=>{
+      if(!isCurrentMonth(s.date)) return;
+      const key = s.salesExecutive || 'Unknown';
+      counts[key] = (counts[key]||0)+1;
+    });
+    return Object.keys(counts).map(name=>({name, count:counts[name]})).sort((a,b)=>b.count-a.count).slice(0,5);
+  }
+  function computeBadges(){
+    const last7 = {};
+    state.sales.forEach(s=>{ if(isLastNDays(s.date,7)){ const k=s.salesExecutive||'Unknown'; last7[k]=(last7[k]||0)+1; } });
+    let starName=null, starCount=0;
+    Object.keys(last7).forEach(k=>{ if(last7[k]>starCount){ starCount=last7[k]; starName=k; } });
+    const converts = {};
+    state.leads.forEach(l=>{
+      if(l.status!=='order-done') return;
+      const u = users.find(x=>x.username===l.assignedTo);
+      const name = u ? u.name : l.assignedTo;
+      if(name) converts[name] = (converts[name]||0)+1;
+    });
+    let dealName=null, dealCount=0;
+    Object.keys(converts).forEach(k=>{ if(converts[k]>dealCount){ dealCount=converts[k]; dealName=k; } });
+    return { star: starName?{name:starName,count:starCount}:null, dealMaker: dealName?{name:dealName,count:dealCount}:null };
+  }
+
+  // Renders a premium pill dropdown: trigger badge + floating option list.
+  function renderStatusDropdown(targetId, currentKey, options){
+    const cur = options.find(o=>o.key===currentKey) || {key:currentKey, label:currentKey};
+    return `
+      <div class="vc-status-dd">
+        <button type="button" class="vc-status-trigger vc-badge ${cur.key}" data-toggle="${targetId}">
+          <span class="vc-status-dot" style="background:${statusDotColor(cur.key)}"></span>${escapeHtml(cur.label)}${ICONS.chevron}
+        </button>
+        <div class="vc-status-menu" data-menu="${targetId}">
+          ${options.map(o=>`
+            <div class="vc-status-option ${o.key===currentKey?'active':''}" data-target="${targetId}" data-value="${o.key}">
+              <span class="vc-status-dot" style="background:${statusDotColor(o.key)}"></span>
+              <span class="vc-status-label">${escapeHtml(o.label)}</span>
+              ${o.key===currentKey?ICONS.check:''}
+            </div>`).join('')}
+        </div>
+      </div>`;
+  }
+  // Plain glass-style dropdown for filters (no colored badge) — e.g. source/assignee pickers.
+  function renderFilterDropdown(targetId, currentKey, options){
+    const cur = options.find(o=>o.key===currentKey) || options[0];
+    return `
+      <div class="vc-status-dd">
+        <button type="button" class="vc-status-trigger vc-filter-trigger" data-toggle="${targetId}">
+          <span class="vc-status-label">${escapeHtml(cur?cur.label:currentKey)}</span>${ICONS.chevron}
+        </button>
+        <div class="vc-status-menu" data-menu="${targetId}">
+          ${options.map(o=>`
+            <div class="vc-status-option ${o.key===currentKey?'active':''}" data-target="${targetId}" data-value="${o.key}">
+              <span class="vc-status-label">${escapeHtml(o.label)}</span>
+              ${o.key===currentKey?ICONS.check:''}
+            </div>`).join('')}
+        </div>
+      </div>`;
+  }
+  // Wires up trigger/option clicks for all custom dropdowns rendered inside `main`.
+  function wireStatusDropdowns(main, onChange){
+    main.querySelectorAll('[data-toggle]').forEach(btn=>{
+      btn.onclick = (e)=>{
+        e.stopPropagation();
+        const id = btn.dataset.toggle;
+        main.querySelectorAll('.vc-status-menu.open').forEach(m=>{ if(m.dataset.menu!==id) m.classList.remove('open'); });
+        const menu = main.querySelector(`.vc-status-menu[data-menu="${id}"]`);
+        if(menu) menu.classList.toggle('open');
+      };
+    });
+    main.querySelectorAll('.vc-status-option').forEach(opt=>{
+      opt.onclick = async (e)=>{
+        e.stopPropagation();
+        await onChange(opt.dataset.target, opt.dataset.value);
+      };
+    });
+  }
+  document.addEventListener('click', ()=>{
+    document.querySelectorAll('.vc-status-menu.open').forEach(m=>m.classList.remove('open'));
+  });
+  const DEMO_LEADS = [
+    {name:'Ramesh Prajapati', phone:'9825012345', state:'Gujarat', district:'Rajkot', product:'Product enquiry - bulk order', source:'IndiaMART', status:'followup'},
+    {name:'Vikram Solanki', phone:'9998877665', state:'Madhya Pradesh', district:'Indore', product:'Premium package - detailed quote', source:'IndiaMART', status:'imp'},
+    {name:'Suresh Yadav', phone:'9012345678', state:'Uttar Pradesh', district:'Kanpur Dehat', product:'Spare parts / accessories', source:'IndiaMART', status:'cnr'},
+    {name:'Anil Chaudhary', phone:'9765432109', state:'Rajasthan', district:'Jaipur', product:'Standard package enquiry', source:'IndiaMART', status:'number-off'},
+    {name:'Mahesh Patil', phone:'9822011223', state:'Maharashtra', district:'Nashik', product:'Deluxe package order', source:'IndiaMART', status:'order-done'},
+    {name:'Devendra Singh', phone:'9450098765', state:'Punjab', district:'Ludhiana', product:'Pricing / quotation request', source:'IndiaMART', status:'most-important'},
+  ];
+  const DEMO_PRODUCTS = [
+    {name:'Standard Package', customerPrice:12000, ndpPrice:9500, stock:25, hsn:'', unit:'Unit', specs:'Entry-level option | Core features included | 6-month warranty'},
+    {name:'Premium Package', customerPrice:22000, ndpPrice:18000, stock:15, hsn:'', unit:'Unit', specs:'Includes advanced features | Priority support | 1-year warranty'},
+    {name:'Deluxe Package', customerPrice:35000, ndpPrice:29000, stock:8, hsn:'', unit:'Unit', specs:'Full feature set | Dedicated support | 2-year warranty'},
+    {name:'Add-on Accessory', customerPrice:3500, ndpPrice:2800, stock:40, hsn:'', unit:'Pcs', specs:'Compatible with all packages | Sold separately'},
+    {name:'Annual Service Plan', customerPrice:5000, ndpPrice:4000, stock:100, hsn:'', unit:'Unit', specs:'12 months of maintenance and support included'},
+  ];
+  const DEFAULT_SETTINGS = {
+    name:'Your Company Name',
+    tagline:'Your Business Tagline',
+    manufacturerLine:'',
+    address:'',
+    mobile1:'', mobile2:'',
+    email:'', website:'',
+    gstin:'',
+    bankName:'', bankBranch:'', accountName:'', accountNo:'', ifsc:'',
+    quotationPrefix:'QTN/2026/', nextQuotationSeq:1,
+    validityDays:7, gstPercent:12, lowStockThreshold:5,
+    paymentTerms:'',
+    bookingNote:'',
+    terms:[
+      'Pricing & Validity: Quoted prices are valid as stated above. We reserve the right to revise prices in the event of major cost fluctuations.',
+      'Payment Terms: Please refer to the payment terms mentioned above for this quotation.',
+      'Delivery: Delivery timelines will be confirmed at the time of order confirmation.',
+      'Jurisdiction: All legal and commercial disputes are subject to local jurisdiction.',
+    ],
+  };
+  function isAdmin(){ return session && session.role==='admin'; }
+
+  let state = { customers:[], products:[], leads:[], sales:[], quotations:[], followups:[], settings:{...DEFAULT_SETTINGS}, routingRules:[], notifPrefs:{newLead:true, followup:true}, loaded:false };
+  let activeTab = 'dashboard';
+
+  function uid(){ return Date.now().toString(36)+Math.random().toString(36).slice(2,7); }
+  function fmtMoney(n){ return '₹'+Number(n||0).toLocaleString('en-IN'); }
+  function fmtDate(d){ if(!d) return '-'; return new Date(d).toLocaleDateString('en-IN',{day:'2-digit',month:'short',year:'numeric'}); }
+  function saleItemsSummary(sale){
+    if(sale.items && sale.items.length) return sale.items.map(it=>`${it.productName} ×${it.qty}`).join(', ');
+    return sale.item || '-';
+  }
+  function numToWordsIndian(num){
+    const ones=['','One','Two','Three','Four','Five','Six','Seven','Eight','Nine','Ten','Eleven','Twelve','Thirteen','Fourteen','Fifteen','Sixteen','Seventeen','Eighteen','Nineteen'];
+    const tens=['','','Twenty','Thirty','Forty','Fifty','Sixty','Seventy','Eighty','Ninety'];
+    function twoDigit(n){ if(n<20) return ones[n]; return tens[Math.floor(n/10)] + (n%10? ' '+ones[n%10] : ''); }
+    function threeDigit(n){ if(n<100) return twoDigit(n); return ones[Math.floor(n/100)] + ' Hundred' + (n%100? ' '+twoDigit(n%100) : ''); }
+    num = Math.round(Number(num)||0);
+    if(num===0) return 'Zero';
+    let crore = Math.floor(num/10000000); num%=10000000;
+    let lakh = Math.floor(num/100000); num%=100000;
+    let thousand = Math.floor(num/1000); num%=1000;
+    let rest = num;
+    let parts=[];
+    if(crore) parts.push(threeDigit(crore)+' Crore');
+    if(lakh) parts.push(threeDigit(lakh)+' Lakh');
+    if(thousand) parts.push(threeDigit(thousand)+' Thousand');
+    if(rest) parts.push(threeDigit(rest));
+    return parts.join(' ') || 'Zero';
+  }
+  function amountInWords(n){ return numToWordsIndian(n) + ' Rupees Only'; }
+  function nextQuotationNo(){
+    const seq = state.settings.nextQuotationSeq || 1;
+    return (state.settings.quotationPrefix||'QTN/') + String(seq).padStart(3,'0');
+  }
+  function todayStr(){ return new Date().toISOString().slice(0,10); }
+  function escapeHtml(s){ if(s===undefined||s===null) return ''; return String(s).replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m])); }
+
+  function exportToCsv(filename, headers, rows){
+    function csvCell(v){
+      const s = (v===undefined||v===null) ? '' : String(v);
+      if(/[",\n]/.test(s)) return '"' + s.replace(/"/g,'""') + '"';
+      return s;
+    }
+    const lines = [headers.map(csvCell).join(',')];
+    rows.forEach(r=>{ lines.push(r.map(csvCell).join(',')); });
+    const csvContent = '\uFEFF' + lines.join('\r\n');
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url; a.download = filename;
+    document.body.appendChild(a); a.click(); document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  }
+
+  async function sGet(key){
+    try{
+      const doc = await db.collection('crmData').doc(key).get();
+      if(!doc.exists) return null;
+      const data = doc.data();
+      return (data && data.value!==undefined) ? JSON.parse(data.value) : null;
+    }catch(e){ console.error('sGet error:', key, e); return null; }
+  }
+  async function sSet(key,val){
+    try{
+      await db.collection('crmData').doc(key).set({ value: JSON.stringify(val), updatedAt: Date.now() });
+    }catch(e){ console.error('sSet error:', key, e); }
+  }
+
+  // ---------------- BOOT ----------------
+  async function boot(){
+    users = (await sGet('crm:users')) || [];
+    const st = await sGet('crm:settings');
+    state.settings = st ? {...DEFAULT_SETTINGS, ...st} : {...DEFAULT_SETTINGS};
+    try{ document.title = state.settings.name + ' — CRM'; }catch(e){}
+
+    try{
+      const saved = localStorage.getItem('crm_session');
+      if(saved){
+        const parsed = JSON.parse(saved);
+        const match = users.find(u=>u.username===parsed.username);
+        if(match){
+          session = { username: match.username, name: match.name, role: match.role };
+          await initApp();
+          return;
+        }
+      }
+    }catch(e){ console.error('session restore error', e); }
+
+    renderLogin();
+  }
+
+  function renderLogin(hasAccount, err){
+    hasAccount = hasAccount===undefined ? users.length>0 : hasAccount;
+    root.innerHTML = `
+      <div class="vc-login">
+        <div class="vc-login-hero" style="background-image:${state.settings.heroPhoto ? `linear-gradient(90deg, rgba(10,25,15,0.55) 0%, rgba(10,25,15,0.15) 45%, rgba(10,25,15,0.55) 100%), url('${state.settings.heroPhoto}')` : `radial-gradient(circle at 20% 15%, rgba(255,255,255,0.08), transparent 40%), repeating-linear-gradient(115deg, rgba(255,255,255,0.035) 0 2px, transparent 2px 26px), linear-gradient(160deg, #0F2417 0%, #1B4028 45%, #2A5C39 100%)`};">
+          <div class="vc-login-logo">
+            <div class="vc-logo-box">${state.settings.logo?`<img src="${state.settings.logo}" style="width:100%;height:100%;object-fit:cover;border-radius:9px;"/>`:ICONS.leaf}</div>
+            <div>
+              <div class="vc-login-brand">${escapeHtml(state.settings.name)}</div>
+            </div>
+          </div>
+          <div>
+            <div class="vc-login-headline">Grow your business.<br/>Track every deal.</div>
+            <div class="vc-login-desc">A focused CRM for your trading business — manage customers, leads, orders, and follow-ups in one place.</div>
+          </div>
+          <div class="vc-login-foot">© ${new Date().getFullYear()} ${escapeHtml(state.settings.name)}. Built for your team.<br/>Developed by Shivrajsinh Parmar</div>
+        </div>
+        <div class="vc-login-form-wrap">
+          <div class="vc-login-form">
+            ${hasAccount ? `
+              <h2>Sign in</h2>
+              <p>Welcome back. Enter your credentials to access the CRM.</p>
+              <div class="vc-field"><label>Username</label><input id="li_user" placeholder="Enter username"/></div>
+              <div class="vc-field"><label>Password</label>
+                <div class="vc-pwd-wrap">
+                  <input id="li_pass" type="password" placeholder="Enter password"/>
+                  <span class="vc-pwd-eye" id="li_eye">${ICONS.eye}</span>
+                </div>
+              </div>
+              <button class="vc-login-btn" id="li_btn">Sign in to dashboard</button>
+              <div class="vc-login-err">${err||''}</div>
+              <hr class="vc-login-hr"/>
+              <div class="vc-login-note">Each team member signs in with their own account</div>
+            ` : `
+              <h2>Set up owner account</h2>
+              <p>Create your admin login. You'll be able to add employee accounts after signing in.</p>
+              <div class="vc-field"><label>Your Name</label><input id="su_name" placeholder="e.g. Shivrajsinh"/></div>
+              <div class="vc-field"><label>Username</label><input id="su_user" placeholder="e.g. owner"/></div>
+              <div class="vc-field"><label>Mobile Number <span style="font-weight:400;color:var(--muted);">(for password reset via OTP)</span></label><input id="su_mobile" placeholder="e.g. 9825012345"/></div>
+              <div class="vc-field"><label>Password</label>
+                <div class="vc-pwd-wrap">
+                  <input id="su_pass" type="password" placeholder="Choose a password"/>
+                  <span class="vc-pwd-eye" id="su_eye">${ICONS.eye}</span>
+                </div>
+              </div>
+              <button class="vc-login-btn" id="su_btn">Create &amp; sign in</button>
+              <div class="vc-login-err">${err||''}</div>
+            `}
+          </div>
+        </div>
+      </div>
+    `;
+    if(hasAccount){
+      let shown=false;
+      document.getElementById('li_eye').onclick=()=>{
+        shown=!shown;
+        document.getElementById('li_pass').type = shown?'text':'password';
+      };
+      document.getElementById('li_btn').onclick = doLogin;
+      document.getElementById('li_pass').addEventListener('keydown',e=>{if(e.key==='Enter')doLogin();});
+    } else {
+      let shownSu=false;
+      document.getElementById('su_eye').onclick=()=>{
+        shownSu=!shownSu;
+        document.getElementById('su_pass').type = shownSu?'text':'password';
+      };
+      document.getElementById('su_btn').onclick = doSignup;
+      document.getElementById('su_pass').addEventListener('keydown',e=>{if(e.key==='Enter')doSignup();});
+    }
+  }
+
+  async function doSignup(){
+    const name = document.getElementById('su_name').value.trim();
+    const u = document.getElementById('su_user').value.trim();
+    const p = document.getElementById('su_pass').value;
+    const mobile = document.getElementById('su_mobile').value.trim();
+    if(!name||!u||!p){ renderLogin(false,'Name, username and password are required'); return; }
+    const owner = {id:uid(), username:u, password:p, name, role:'admin', mobile};
+    users = [owner];
+    await sSet('crm:users', users);
+    session = {username:u, name, role:'admin'};
+    try{ localStorage.setItem('crm_session', JSON.stringify(session)); }catch(e){}
+    initApp();
+  }
+  function doLogin(){
+    const u = document.getElementById('li_user').value.trim();
+    const p = document.getElementById('li_pass').value;
+    const match = users.find(x=>x.username===u && x.password===p);
+    if(match){
+      session = {username:match.username, name:match.name, role:match.role};
+      try{ localStorage.setItem('crm_session', JSON.stringify(session)); }catch(e){}
+      initApp();
+    } else {
+      renderLogin(true,'Incorrect username or password');
+    }
+  }
+
+  // ---------------- APP ----------------
+  async function initApp(){
+    root.innerHTML = `<div style="padding:60px;text-align:center;color:var(--muted);">Loading…</div>`;
+    const [c,p,l,s,f,q,st,rr,np] = await Promise.all([
+      sGet('crm:customers2'), sGet('crm:products'), sGet('crm:leads'), sGet('crm:sales'), sGet('crm:followups2'), sGet('crm:quotations'), sGet('crm:settings'), sGet('crm:routingRules'), sGet('crm:notifprefs:'+session.username)
+    ]);
+    state.customers = c||[]; state.products = p||[]; state.leads = l||[]; state.sales = s||[]; state.followups = f||[]; state.quotations = q||[];
+    state.settings = st ? {...DEFAULT_SETTINGS, ...st} : {...DEFAULT_SETTINGS};
+    state.routingRules = rr||[];
+    state.notifPrefs = np||{newLead:true, followup:true};
+    if(state.leads.length===0){
+      state.leads = DEMO_LEADS.map(l=>({id:uid(), name:l.name, phone:l.phone, state:l.state, district:l.district, product:l.product, interest:l.product, source:l.source, status:l.status, createdAt:todayStr()}));
+      await sSet('crm:leads', state.leads);
+    }
+    if(state.products.length===0){
+      state.products = DEMO_PRODUCTS.map(p=>({id:uid(), name:p.name, photo:null, customerPrice:p.customerPrice, ndpPrice:p.ndpPrice, stock:p.stock, hsn:p.hsn, unit:p.unit, specs:p.specs}));
+      await sSet('crm:products', state.products);
+    }
+    state.loaded = true;
+    try{
+      const savedTab = localStorage.getItem('crm_activeTab');
+      const validKeys = NAV.map(n=>n.key);
+      activeTab = (savedTab && validKeys.includes(savedTab)) ? savedTab : 'dashboard';
+    }catch(e){ activeTab = 'dashboard'; }
+    renderApp();
+  }
+
+  function renderApp(){
+    try{ localStorage.setItem('crm_activeTab', activeTab); }catch(e){}
+    root.innerHTML = `
+      <div class="vc-app">
+        <div class="vc-side">
+          <div class="vc-side-top">
+            <div class="vc-logo-box">${state.settings.logo?`<img src="${state.settings.logo}" style="width:100%;height:100%;object-fit:cover;border-radius:9px;"/>`:ICONS.leaf}</div>
+            <div class="vc-side-brand">${escapeHtml(state.settings.name)}</div>
+          </div>
+          <div id="vcNav"></div>
+          <div class="vc-side-foot">
+            <div class="vc-side-foot-label">Signed in as</div>
+            <div class="vc-side-foot-name">${escapeHtml(session.name||session.username)} <span style="opacity:0.6;font-weight:400;">· ${isAdmin()?'Owner':'Employee'}</span></div>
+            <div class="vc-logout" id="vcLogout">${ICONS.logout} Logout</div>
+            <div style="font-size:9.5px;color:#5E7466;margin-top:12px;">Developed by Shivrajsinh Parmar</div>
+          </div>
+        </div>
+        <div class="vc-main" id="vcMain"></div>
+      </div>
+    `;
+    const nav = document.getElementById('vcNav');
+    const visibleNav = NAV.filter(n=>!n.adminOnly || isAdmin());
+    nav.innerHTML = visibleNav.map(n=>`<div class="vc-navbtn ${n.key===activeTab?'active':''}" data-tab="${n.key}">${ICONS[n.icon]}${n.label}</div>`).join('');
+    nav.querySelectorAll('.vc-navbtn').forEach(b=>b.onclick=()=>{ activeTab=b.dataset.tab; renderApp(); });
+    document.getElementById('vcLogout').onclick = ()=>{ session=null; try{ localStorage.removeItem('crm_session'); }catch(e){} renderLogin(true); };
+    renderTab();
+  }
+
+  function notifPrefsModal(){
+    const ov=document.createElement('div'); ov.className='vc-overlay';
+    ov.innerHTML=`<div class="vc-modal" style="width:340px;"><h3>Notification Preferences</h3>
+      <p style="font-size:11.5px;color:var(--muted);margin:-8px 0 16px;line-height:1.6;">
+        These control in-app alerts shown on your Dashboard when you're using the CRM. This browser tool can't send real push notifications to your phone or desktop when the app is closed.
+      </p>
+      <label style="display:flex;align-items:center;gap:10px;font-size:13px;margin-bottom:14px;cursor:pointer;">
+        <input type="checkbox" id="f_np1" ${state.notifPrefs.followup?'checked':''}/> Show a banner for follow-ups due today or overdue
+      </label>
+      <label style="display:flex;align-items:center;gap:10px;font-size:13px;margin-bottom:6px;cursor:pointer;">
+        <input type="checkbox" id="f_np2" ${state.notifPrefs.newLead?'checked':''}/> Highlight new leads assigned to me
+      </label>
+      <div class="vc-modal-actions"><button class="vc-btn ghost" id="cx">Cancel</button><button class="vc-btn" id="sx">Save</button></div>
+    </div>`;
+    document.body.appendChild(ov);
+    ov.onclick=e=>{if(e.target===ov)ov.remove();};
+    ov.querySelector('#cx').onclick=()=>ov.remove();
+    ov.querySelector('#sx').onclick=async()=>{
+      state.notifPrefs = {
+        followup: ov.querySelector('#f_np1').checked,
+        newLead: ov.querySelector('#f_np2').checked,
+      };
+      await sSet('crm:notifprefs:'+session.username, state.notifPrefs);
+      ov.remove(); renderTab();
+    };
+  }
+
+  function changePasswordOtpModal(){
+    const me = users.find(u=>u.username===session.username);
+    const ov=document.createElement('div'); ov.className='vc-overlay';
+    let confirmationResult = null;
+    let recaptchaVerifier = null;
+
+    function drawStep1(err){
+      ov.innerHTML = `<div class="vc-modal" style="width:360px;"><h3>Change Password — Step 1 of 3</h3>
+        <p style="font-size:11.5px;color:var(--muted);margin:-8px 0 16px;line-height:1.6;">We'll send a one-time code by SMS to verify it's really you before changing your password.</p>
+        <div class="vc-field"><label>Mobile Number</label><input id="f_mobile" value="${escapeHtml(me&&me.mobile?me.mobile:'7777914246')}" placeholder="e.g. 9825012345"/></div>
+        <div id="otpRecaptcha"></div>
+        <div class="vc-login-err">${err||''}</div>
+        <div class="vc-modal-actions"><button class="vc-btn ghost" id="cx">Cancel</button><button class="vc-btn" id="sendBtn">Send OTP</button></div>
+      </div>`;
+      ov.querySelector('#cx').onclick=()=>{ if(recaptchaVerifier) recaptchaVerifier.clear(); ov.remove(); };
+      ov.querySelector('#sendBtn').onclick = async ()=>{
+        const rawMobile = ov.querySelector('#f_mobile').value.trim();
+        const clean = cleanPhone(rawMobile);
+        if(clean.length!==10){ drawStep1('Please enter a valid 10-digit mobile number'); return; }
+        const sendBtn = ov.querySelector('#sendBtn');
+        sendBtn.textContent = 'Sending…'; sendBtn.disabled = true;
+        try{
+          if(recaptchaVerifier) recaptchaVerifier.clear();
+          recaptchaVerifier = new firebase.auth.RecaptchaVerifier('otpRecaptcha', { size: 'invisible' }, fbAuth);
+          confirmationResult = await fbAuth.signInWithPhoneNumber('+91'+clean, recaptchaVerifier);
+          // Save the mobile number against this admin's account for next time.
+          users = users.map(u=>u.id===me.id?{...u, mobile: clean}:u);
+          await sSet('crm:users', users);
+          drawStep2(clean);
+        }catch(e){
+          console.error('OTP send error', e);
+          drawStep1('Could not send OTP: '+(e.message||'please check the number and try again'));
+        }
+      };
+    }
+
+    function drawStep2(clean){
+      ov.innerHTML = `<div class="vc-modal" style="width:360px;"><h3>Change Password — Step 2 of 3</h3>
+        <p style="font-size:11.5px;color:var(--muted);margin:-8px 0 16px;line-height:1.6;">Enter the 6-digit code sent to +91 ${escapeHtml(clean)}.</p>
+        <div class="vc-field"><label>OTP Code</label><input id="f_otp" placeholder="123456" maxlength="6"/></div>
+        <div class="vc-login-err" id="otpErr"></div>
+        <div class="vc-modal-actions"><button class="vc-btn ghost" id="cx">Cancel</button><button class="vc-btn" id="verifyBtn">Verify</button></div>
+      </div>`;
+      ov.querySelector('#cx').onclick=()=>{ if(recaptchaVerifier) recaptchaVerifier.clear(); ov.remove(); };
+      ov.querySelector('#verifyBtn').onclick = async ()=>{
+        const code = ov.querySelector('#f_otp').value.trim();
+        if(!code){ ov.querySelector('#otpErr').textContent = 'Enter the code you received'; return; }
+        try{
+          await confirmationResult.confirm(code);
+          drawStep3();
+        }catch(e){
+          console.error('OTP verify error', e);
+          ov.querySelector('#otpErr').textContent = 'Incorrect or expired code, please try again';
+        }
+      };
+    }
+
+    function drawStep3(){
+      ov.innerHTML = `<div class="vc-modal" style="width:360px;"><h3>Change Password — Step 3 of 3</h3>
+        <p style="font-size:11.5px;color:var(--muted);margin:-8px 0 16px;line-height:1.6;">Mobile number verified. Choose your new password.</p>
+        <div class="vc-field"><label>New Password</label><input id="f_np" type="password" placeholder="New password"/></div>
+        <div class="vc-field"><label>Confirm Password</label><input id="f_np2" type="password" placeholder="Confirm new password"/></div>
+        <div class="vc-login-err" id="finalErr"></div>
+        <div class="vc-modal-actions"><button class="vc-btn ghost" id="cx">Cancel</button><button class="vc-btn" id="saveBtn">Save Password</button></div>
+      </div>`;
+      ov.querySelector('#cx').onclick=()=>ov.remove();
+      ov.querySelector('#saveBtn').onclick = async ()=>{
+        const p1 = ov.querySelector('#f_np').value;
+        const p2 = ov.querySelector('#f_np2').value;
+        if(!p1 || p1.length<4){ ov.querySelector('#finalErr').textContent = 'Password must be at least 4 characters'; return; }
+        if(p1!==p2){ ov.querySelector('#finalErr').textContent = 'Passwords do not match'; return; }
+        users = users.map(u=>u.id===me.id?{...u, password:p1}:u);
+        await sSet('crm:users', users);
+        ov.remove();
+        alert('Password changed successfully!');
+      };
+    }
+
+    document.body.appendChild(ov);
+    ov.addEventListener('click', e=>{ if(e.target===ov){ if(recaptchaVerifier) recaptchaVerifier.clear(); ov.remove(); } });
+    drawStep1();
+  }
+
+  function renderTab(){
+    const main = document.getElementById('vcMain');
+    if(activeTab==='dashboard') return renderDashboard(main);
+    if(activeTab==='customers') return renderCustomers(main);
+    if(activeTab==='products') return renderProducts(main);
+    if(activeTab==='leads') return renderLeads(main);
+    if(activeTab==='quotations') return renderQuotations(main);
+    if(activeTab==='sales') return renderSales(main);
+    if(activeTab==='followups') return renderFollowups(main);
+    if(activeTab==='reports') return isAdmin() ? renderReports(main) : renderDashboard(main);
+    if(activeTab==='settings') return isAdmin() ? renderSettings(main) : renderDashboard(main);
+  }
+
+  // ---------------- DASHBOARD ----------------
+  function renderDashboard(main){
+    const activeLeads = state.leads.filter(l=>l.status!=='order-done'&&l.status!=='dnd').length;
+    const pendingF = state.leads.filter(l=>l.followupDate && !l.followupDone).length;
+    const myPendingF = state.leads.filter(l=>l.followupDate && !l.followupDone && (isAdmin()||l.assignedTo===session.username) && l.followupDate<=todayStr()).length;
+    const totalRevenue = state.sales.reduce((s,x)=>s+Number(x.amount||0),0);
+    const collected = state.sales.filter(x=>x.status==='paid').reduce((s,x)=>s+Number(x.amount||0),0);
+    const pendingPay = state.sales.filter(x=>x.status==='pending').reduce((s,x)=>s+Number(x.amount||0),0);
+    const recentSales = state.sales.slice().sort((a,b)=>(b.date||'').localeCompare(a.date||'')).slice(0,4);
+    const recentLeads = state.leads.slice().sort((a,b)=>(b.createdAt||'').localeCompare(a.createdAt||'')).slice(0,4);
+
+    const myUser = users.find(u=>u.username===session.username) || {};
+    const myName = myUser.name || session.name || session.username;
+    const myTarget = myUser.monthlyTarget || 0;
+    const myAchieved = state.sales.filter(s=>s.salesExecutive===myName && isCurrentMonth(s.date)).reduce((sum,s)=>sum+Number(s.amount||0),0);
+    const myRemaining = Math.max(0, myTarget-myAchieved);
+    const myPct = myTarget>0 ? Math.round(Math.min(100, myAchieved/myTarget*100)) : 0;
+
+    const leaderboard = computeLeaderboard();
+    const badges = computeBadges();
+    const lowStockThreshold = state.settings.lowStockThreshold!=null ? state.settings.lowStockThreshold : 5;
+    const lowStockProducts = state.products.filter(p=>Number(p.stock)<=lowStockThreshold);
+
+    main.innerHTML = `
+      <div class="vc-topbar">
+        <div><div class="vc-title">Dashboard</div><div class="vc-sub">A quick view across your business operations.</div></div>
+      </div>
+      ${(state.notifPrefs.followup && myPendingF>0) ? `
+      <div class="vc-panel" style="display:flex;align-items:center;justify-content:space-between;padding:12px 18px;margin-bottom:16px;background:linear-gradient(165deg, rgba(247,235,211,0.85), rgba(247,235,211,0.55));border-color:rgba(184,134,46,0.35);">
+        <div style="display:flex;align-items:center;gap:10px;font-size:12.5px;color:#7A5200;font-weight:600;">${ICONS.bell} You have ${myPendingF} follow-up${myPendingF===1?'':'s'} due ${isAdmin()?'across the team':'assigned to you'} today or overdue.</div>
+        <button class="vc-btn ghost sm" id="goFollowups">View</button>
+      </div>` : ''}
+      ${lowStockProducts.length>0 ? `
+      <div class="vc-panel" style="display:flex;align-items:center;justify-content:space-between;padding:12px 18px;margin-bottom:16px;background:linear-gradient(165deg, rgba(246,225,221,0.85), rgba(246,225,221,0.55));border-color:rgba(179,38,30,0.3);">
+        <div style="display:flex;align-items:center;gap:10px;font-size:12.5px;color:var(--red);font-weight:600;">${ICONS.box} Low stock: ${lowStockProducts.map(p=>escapeHtml(p.name)+' ('+p.stock+')').join(', ')}</div>
+        <button class="vc-btn ghost sm" id="goProducts">View</button>
+      </div>` : ''}
+      <div class="vc-cards">
+        <div class="vc-card"><div class="vc-card-icon">${ICONS.users}</div><div class="vc-card-label">Customers</div><div class="vc-card-val">${state.customers.length}</div></div>
+        <div class="vc-card"><div class="vc-card-icon amber">${ICONS.box}</div><div class="vc-card-label">Products</div><div class="vc-card-val">${state.products.length}</div></div>
+        <div class="vc-card"><div class="vc-card-icon blue">${ICONS.target}</div><div class="vc-card-label">Active Leads</div><div class="vc-card-val">${activeLeads}</div></div>
+        <div class="vc-card"><div class="vc-card-icon red">${ICONS.bell}</div><div class="vc-card-label">Pending Follow-ups</div><div class="vc-card-val">${pendingF}</div></div>
+      </div>
+      ${isAdmin() ? `
+      <div class="vc-cards" style="margin-bottom:20px;">
+        <div class="vc-card"><div class="vc-card-icon">${ICONS.rupee}</div><div class="vc-card-label">Total Revenue</div><div class="vc-card-val">${fmtMoney(totalRevenue)}</div></div>
+        <div class="vc-card"><div class="vc-card-icon">${ICONS.trend}</div><div class="vc-card-label">Collected</div><div class="vc-card-val">${fmtMoney(collected)}</div></div>
+        <div class="vc-card"><div class="vc-card-icon amber">${ICONS.clock}</div><div class="vc-card-label">Pending Payments</div><div class="vc-card-val">${fmtMoney(pendingPay)}</div></div>
+      </div>` : ''}
+
+      <div class="vc-panels">
+        <div class="vc-panel" style="text-align:center;">
+          <div class="vc-panel-title" style="justify-content:center;">My Performance — This Month</div>
+          ${myTarget>0 ? `
+          <div style="position:relative;max-width:220px;margin:0 auto;">
+            ${renderGaugeSVG(myPct, myPct>=100?'var(--leaf)':'var(--amber)')}
+            <div style="position:absolute;top:66%;left:50%;transform:translate(-50%,-50%);text-align:center;">
+              <div style="font-family:'Sora',sans-serif;font-weight:800;font-size:24px;color:var(--ink);">${myPct}%</div>
+              <div style="font-size:9.5px;color:var(--muted);text-transform:uppercase;letter-spacing:0.4px;">of target</div>
+            </div>
+          </div>
+          <div style="display:flex;justify-content:center;gap:22px;font-size:11.5px;margin-top:6px;">
+            <div><div style="color:var(--muted);">Target</div><b>${fmtMoney(myTarget)}</b></div>
+            <div><div style="color:var(--muted);">Achieved</div><b style="color:var(--leaf);">${fmtMoney(myAchieved)}</b></div>
+            <div><div style="color:var(--muted);">Remaining</div><b style="color:var(--amber);">${fmtMoney(myRemaining)}</b></div>
+          </div>
+          ` : `<div class="vc-empty">No monthly target set yet.${isAdmin()?' Set one from the Team tab.':' Ask the owner to set one for you.'}</div>`}
+        </div>
+        <div class="vc-panel">
+          <div class="vc-panel-title">🏆 Leaderboard — Orders This Month</div>
+          ${leaderboard.length? leaderboard.map((r,i)=>`
+            <div class="vc-row">
+              <div style="display:flex;align-items:center;gap:8px;">
+                <span style="font-family:'Sora',sans-serif;font-weight:800;color:${i===0?'var(--amber)':'var(--muted)'};width:18px;">${i+1}</span>
+                <div class="vc-row-name">${escapeHtml(r.name)}</div>
+                ${i===0?'<span style="font-size:14px;">👑</span>':''}
+              </div>
+              <div class="vc-row-right"><b>${r.count} order${r.count===1?'':'s'}</b></div>
+            </div>
+          `).join('') : `<div class="vc-empty">No orders yet this month</div>`}
+          ${(badges.star||badges.dealMaker)?`
+          <div style="display:flex;gap:8px;margin-top:12px;padding-top:12px;border-top:1px solid var(--line);flex-wrap:wrap;">
+            ${badges.star?`<span class="vc-badge src">🔥 Star of the Week: ${escapeHtml(badges.star.name)}</span>`:''}
+            ${badges.dealMaker?`<span class="vc-badge src">🤝 Deal Maker: ${escapeHtml(badges.dealMaker.name)}</span>`:''}
+          </div>`:''}
+        </div>
+      </div>
+
+      <div class="vc-panels">
+        <div class="vc-panel">
+          <div class="vc-panel-title">Recent Orders</div>
+          ${recentSales.length? recentSales.map(s=>`
+            <div class="vc-row">
+              <div><div class="vc-row-name">${escapeHtml(s.customerName)}</div><div class="vc-row-sub">${escapeHtml(saleItemsSummary(s))}</div></div>
+              <div class="vc-row-right">${isAdmin()?`<div class="vc-row-name">${fmtMoney(s.amount)}</div>`:''}<span class="vc-badge ${s.status}">${s.status}</span></div>
+            </div>
+          `).join('') : `<div class="vc-empty">No sales yet</div>`}
+        </div>
+        <div class="vc-panel">
+          <div class="vc-panel-title">Recent Leads</div>
+          ${recentLeads.length? recentLeads.map(l=>`
+            <div class="vc-row">
+              <div><div class="vc-row-name">${escapeHtml(l.name)}</div><div class="vc-row-sub">${escapeHtml(l.product||l.interest||'-')} · ${escapeHtml(l.city||l.state||'-')}</div></div>
+              <div class="vc-row-right"><span class="vc-badge ${l.status}">${statusLabel(l.status)}</span></div>
+            </div>
+          `).join('') : `<div class="vc-empty">No leads yet</div>`}
+        </div>
+      </div>
+    `;
+    const goBtn = document.getElementById('goFollowups');
+    if(goBtn) goBtn.onclick = ()=>{ activeTab='followups'; renderApp(); };
+    const goProdBtn = document.getElementById('goProducts');
+    if(goProdBtn) goProdBtn.onclick = ()=>{ activeTab='products'; renderApp(); };
+  }
+
+  // ---------------- CUSTOMERS ----------------
+  function renderCustomers(main, term){
+    term = term||'';
+    const filtered = state.customers.filter(c=>(c.name||'').toLowerCase().includes(term.toLowerCase())||(c.company||'').toLowerCase().includes(term.toLowerCase())||(c.phone||'').includes(term));
+    main.innerHTML = `
+      <div class="vc-topbar">
+        <div><div class="vc-title">Customers</div><div class="vc-sub">${state.customers.length} total · ${state.customers.filter(c=>c.type==='B2B').length} B2B · ${state.customers.filter(c=>c.type!=='B2B').length} B2C</div></div>
+        <div style="display:flex;gap:10px;">
+          <input class="vc-search" id="cSearch" placeholder="Search name, company, phone…" value="${escapeHtml(term)}"/>
+          <button class="vc-btn ghost" id="exportC">${ICONS.quote} Export</button>
+          <button class="vc-btn" id="addC">+ Add Customer</button>
+        </div>
+      </div>
+      <div class="vc-panel">
+        ${filtered.length? `
+        <table class="vc-table">
+          <thead><tr><th>Name</th><th>Company</th><th>Type</th><th>Phone</th><th>State</th><th>GSTIN</th><th></th></tr></thead>
+          <tbody>${filtered.map(c=>`
+            <tr>
+              <td><b>${escapeHtml(c.name)}</b></td>
+              <td>${escapeHtml(c.company||'-')}</td>
+              <td><span class="vc-badge ${c.type==='B2B'?'won':'upcoming'}">${c.type||'B2C'}</span></td>
+              <td>${escapeHtml(c.phone||'-')}</td>
+              <td>${escapeHtml(c.state||'-')}</td>
+              <td>${escapeHtml(c.gstin||'-')}</td>
+              <td style="text-align:right;white-space:nowrap;">
+                <button class="vc-btn ghost sm" data-edit="${c.id}">Edit</button>
+                ${isAdmin()?`<button class="vc-btn danger sm" data-del="${c.id}">Delete</button>`:''}
+              </td>
+            </tr>`).join('')}</tbody>
+        </table>` : `<div class="vc-empty"><b>No customers yet</b>Add your first customer to get started.</div>`}
+      </div>
+    `;
+    document.getElementById('addC').onclick=()=>custModal();
+    document.getElementById('exportC').onclick=()=>{
+      exportToCsv('customers.csv',
+        ['Name','Company','Type','Phone','Contact Person','Address','State','GSTIN','Payment Terms','Added'],
+        filtered.map(c=>[c.name,c.company,c.type||'B2C',c.phone,c.contactPerson,c.address,c.state,c.gstin,c.paymentTerms,fmtDate(c.createdAt)])
+      );
+    };
+    document.getElementById('cSearch').oninput=e=>renderCustomers(main,e.target.value);
+    main.querySelectorAll('[data-edit]').forEach(b=>b.onclick=()=>custModal(b.dataset.edit));
+    main.querySelectorAll('[data-del]').forEach(b=>b.onclick=async()=>{
+      if(!isAdmin())return;
+      if(!confirm('Delete this customer?'))return;
+      state.customers=state.customers.filter(c=>c.id!==b.dataset.del);
+      await sSet('crm:customers2',state.customers); renderTab();
+    });
+  }
+  function custModal(id){
+    const ex = id? state.customers.find(c=>c.id===id):null;
+    const ov = document.createElement('div'); ov.className='vc-overlay';
+    ov.innerHTML=`<div class="vc-modal"><h3>${ex?'Edit':'Add'} Customer</h3>
+      <div class="vc-field"><label>Name *</label><input id="f_n" value="${escapeHtml(ex?.name||'')}"/></div>
+      <div class="vc-field"><label>Company</label><input id="f_c" value="${escapeHtml(ex?.company||'')}"/></div>
+      <div class="vc-field"><label>Type</label><select id="f_type">
+        <option value="B2C" ${ex?.type!=='B2B'?'selected':''}>B2C — Retail / End Customer</option>
+        <option value="B2B" ${ex?.type==='B2B'?'selected':''}>B2B — Dealer / Distributor</option>
+      </select></div>
+      <div class="vc-field"><label>Phone</label><input id="f_p" value="${escapeHtml(ex?.phone||'')}"/></div>
+      <div class="vc-field"><label>Contact Person <span style="font-weight:400;color:var(--muted);">(if different)</span></label><input id="f_contact" value="${escapeHtml(ex?.contactPerson||'')}" placeholder="e.g. Mr. Ramesh (Proprietor)"/></div>
+      <div class="vc-field"><label>Address</label><textarea id="f_addr" placeholder="e.g. Market Yard Road, Indore, Madhya Pradesh">${escapeHtml(ex?.address||'')}</textarea></div>
+      <div class="vc-field"><label>State</label><input id="f_state" value="${escapeHtml(ex?.state||'')}" placeholder="e.g. Gujarat"/></div>
+      <div class="vc-field"><label>GSTIN <span style="font-weight:400;color:var(--muted);">(for B2B)</span></label><input id="f_gst" value="${escapeHtml(ex?.gstin||'')}" placeholder="e.g. 24ABCDE1234F1Z5"/></div>
+      <div class="vc-field"><label>Payment Terms <span style="font-weight:400;color:var(--muted);">(shown on quotations)</span></label><input id="f_pay" value="${escapeHtml(ex?.paymentTerms||'')}" placeholder="e.g. Online Booking + Cash Against Copy"/></div>
+      <div class="vc-modal-actions"><button class="vc-btn ghost" id="cx">Cancel</button><button class="vc-btn" id="sx">Save</button></div>
+    </div>`;
+    document.body.appendChild(ov);
+    ov.onclick=e=>{if(e.target===ov)ov.remove();};
+    ov.querySelector('#cx').onclick=()=>ov.remove();
+    ov.querySelector('#sx').onclick=async()=>{
+      const name=ov.querySelector('#f_n').value.trim();
+      if(!name){alert('Name required');return;}
+      const data={
+        id:ex?ex.id:uid(), name,
+        company:ov.querySelector('#f_c').value.trim(),
+        type:ov.querySelector('#f_type').value,
+        phone:ov.querySelector('#f_p').value.trim(),
+        contactPerson:ov.querySelector('#f_contact').value.trim(),
+        address:ov.querySelector('#f_addr').value.trim(),
+        state:ov.querySelector('#f_state').value.trim(),
+        gstin:ov.querySelector('#f_gst').value.trim(),
+        paymentTerms:ov.querySelector('#f_pay').value.trim(),
+        createdAt:ex?ex.createdAt:todayStr()
+      };
+      state.customers = ex? state.customers.map(c=>c.id===ex.id?data:c) : [...state.customers,data];
+      await sSet('crm:customers2',state.customers); ov.remove(); renderTab();
+    };
+  }
+
+  // ---------------- PRODUCTS ----------------
+  function renderProducts(main){
+    main.innerHTML=`
+      <div class="vc-topbar">
+        <div><div class="vc-title">Products</div><div class="vc-sub">${state.products.length} in catalog</div></div>
+        ${isAdmin()?`<button class="vc-btn" id="addP">+ Add Product</button>`:`<span style="font-size:11.5px;color:var(--muted);display:flex;align-items:center;gap:5px;">${ICONS.lock} View only</span>`}
+      </div>
+      ${state.products.length? `
+      <div class="vc-product-grid">
+        ${state.products.map(p=>`
+          <div class="vc-product-card">
+            <div class="vc-product-photo">${p.photo?`<img src="${p.photo}" alt="${escapeHtml(p.name)}"/>`:ICONS.productPlaceholder}</div>
+            <div class="vc-product-body">
+              <div class="vc-product-name">${escapeHtml(p.name)}</div>
+              <div class="vc-product-prices">
+                <div><span class="vc-product-price-label">Customer</span><b>${fmtMoney(p.customerPrice)}</b></div>
+                <div style="text-align:right;"><span class="vc-product-price-label">NDP</span><b>${fmtMoney(p.ndpPrice)}</b></div>
+              </div>
+              <div class="vc-product-stock">Stock: ${p.stock}</div>
+            </div>
+            ${isAdmin()?`
+            <div class="vc-product-actions">
+              <button class="vc-btn ghost sm" data-edit="${p.id}" style="flex:1;">Edit</button>
+              <button class="vc-btn danger sm" data-del="${p.id}" style="flex:1;">Delete</button>
+            </div>`:''}
+          </div>
+        `).join('')}
+      </div>` : `<div class="vc-panel"><div class="vc-empty"><b>No products yet</b>${isAdmin()?'Add your products to get started.':'Ask the owner to add products.'}</div></div>`}
+    `;
+    if(isAdmin()){
+      document.getElementById('addP').onclick=()=>productModal();
+      main.querySelectorAll('[data-edit]').forEach(b=>b.onclick=()=>productModal(b.dataset.edit));
+      main.querySelectorAll('[data-del]').forEach(b=>b.onclick=async()=>{
+        if(!confirm('Delete this product?'))return;
+        state.products=state.products.filter(p=>p.id!==b.dataset.del);
+        await sSet('crm:products',state.products); renderTab();
+      });
+    }
+  }
+
+  function readAndCompressImage(file, cb){
+    const reader = new FileReader();
+    reader.onload = (e)=>{
+      const img = new Image();
+      img.onload = ()=>{
+        const maxW = 500;
+        const scale = Math.min(1, maxW/img.width);
+        const canvas = document.createElement('canvas');
+        canvas.width = img.width*scale; canvas.height = img.height*scale;
+        const ctx = canvas.getContext('2d');
+        ctx.drawImage(img,0,0,canvas.width,canvas.height);
+        cb(canvas.toDataURL('image/jpeg', 0.72));
+      };
+      img.src = e.target.result;
+    };
+    reader.readAsDataURL(file);
+  }
+
+  function openImageCropModal(file, opts){
+    // opts: { title, settingsKey, aspectRatio, outputWidth, outputHeight }
+    const reader = new FileReader();
+    reader.onload = (e)=>{
+      const ov = document.createElement('div'); ov.className='vc-overlay';
+      ov.innerHTML = `<div class="vc-modal" style="width:${opts.aspectRatio && opts.aspectRatio<1.2 ? 420 : 520}px;max-width:94vw;">
+        <h3>${opts.title}</h3>
+        <p style="font-size:11.5px;color:var(--muted);margin:-8px 0 14px;line-height:1.6;">Drag to move, scroll or pinch to zoom, then Apply.</p>
+        <div style="width:100%;height:320px;background:#F0EFE9;border-radius:10px;overflow:hidden;">
+          <img id="cropImg" src="${e.target.result}" style="max-width:100%;display:block;"/>
+        </div>
+        <div class="vc-modal-actions"><button class="vc-btn ghost" id="cx">Cancel</button><button class="vc-btn" id="applyBtn">Apply</button></div>
+      </div>`;
+      document.body.appendChild(ov);
+      const imgEl = ov.querySelector('#cropImg');
+      const cropper = new Cropper(imgEl, {
+        aspectRatio: opts.aspectRatio || NaN,
+        viewMode: 1,
+        dragMode: 'move',
+        background: false,
+        autoCropArea: 1,
+        cropBoxResizable: true,
+      });
+      function closeAndDestroy(){ cropper.destroy(); ov.remove(); }
+      ov.querySelector('#cx').onclick = closeAndDestroy;
+      ov.querySelector('#applyBtn').onclick = async ()=>{
+        const canvas = cropper.getCroppedCanvas({ width: opts.outputWidth, height: opts.outputHeight });
+        const dataUrl = canvas.toDataURL(opts.format||'image/jpeg', 0.85);
+        state.settings = {...state.settings, [opts.settingsKey]: dataUrl};
+        await sSet('crm:settings', state.settings);
+        closeAndDestroy();
+        renderApp();
+      };
+    };
+    reader.readAsDataURL(file);
+  }
+
+  function productModal(id){
+    const ex = id? state.products.find(p=>p.id===id) : null;
+    let photoData = ex?ex.photo:null;
+    const ov=document.createElement('div'); ov.className='vc-overlay';
+    ov.innerHTML=`<div class="vc-modal"><h3>${ex?'Edit':'Add'} Product</h3>
+      <div class="vc-field"><label>Photo</label>
+        <div id="photoPreview" style="width:100%;height:120px;border-radius:8px;background:#F0EFE9;display:flex;align-items:center;justify-content:center;overflow:hidden;margin-bottom:8px;color:var(--muted);">
+          ${photoData?`<img src="${photoData}" style="width:100%;height:100%;object-fit:cover;"/>`:ICONS.productPlaceholder}
+        </div>
+        <input id="f_photo" type="file" accept="image/*"/>
+      </div>
+      <div class="vc-field"><label>Product Name *</label><input id="f_n" value="${escapeHtml(ex?.name||'')}" placeholder="e.g. Premium Package"/></div>
+      <div class="vc-field"><label>Technical Specifications <span style="font-weight:400;color:var(--muted);">(shown on quotations)</span></label>
+        <textarea id="f_specs" placeholder="e.g. Material, size, key features, what's included">${escapeHtml(ex?.specs||'')}</textarea>
+      </div>
+      <div style="display:flex;gap:10px;">
+        <div class="vc-field" style="flex:1;"><label>HSN Code</label><input id="f_hsn" value="${escapeHtml(ex?.hsn||'')}" placeholder="Optional"/></div>
+        <div class="vc-field" style="flex:1;"><label>Unit</label><select id="f_unit">
+          ${['Unit','Set','Pcs','Piece'].map(u=>`<option value="${u}" ${(ex?.unit||'Unit')===u?'selected':''}>${u}</option>`).join('')}
+        </select></div>
+      </div>
+      <div class="vc-field"><label>Customer Price (₹)</label><input id="f_cp" type="number" value="${ex?.customerPrice||0}"/></div>
+      <div class="vc-field"><label>NDP Price (₹)</label><input id="f_ndp" type="number" value="${ex?.ndpPrice||0}"/></div>
+      <div class="vc-field"><label>Stock</label><input id="f_s" type="number" value="${ex?.stock||0}"/></div>
+      <div class="vc-modal-actions"><button class="vc-btn ghost" id="cx">Cancel</button><button class="vc-btn" id="sx">Save</button></div></div>`;
+    document.body.appendChild(ov);
+    ov.onclick=e=>{if(e.target===ov)ov.remove();};
+    ov.querySelector('#cx').onclick=()=>ov.remove();
+    ov.querySelector('#f_photo').onchange=(e)=>{
+      const file = e.target.files[0];
+      if(!file) return;
+      readAndCompressImage(file, (dataUrl)=>{
+        photoData = dataUrl;
+        ov.querySelector('#photoPreview').innerHTML = `<img src="${dataUrl}" style="width:100%;height:100%;object-fit:cover;"/>`;
+      });
+    };
+    ov.querySelector('#sx').onclick=async()=>{
+      const name=ov.querySelector('#f_n').value.trim();
+      if(!name){alert('Name required');return;}
+      const data = {
+        id: ex?ex.id:uid(), name, photo: photoData,
+        specs: ov.querySelector('#f_specs').value.trim(),
+        hsn: ov.querySelector('#f_hsn').value.trim(),
+        unit: ov.querySelector('#f_unit').value,
+        customerPrice: Number(ov.querySelector('#f_cp').value||0),
+        ndpPrice: Number(ov.querySelector('#f_ndp').value||0),
+        stock: Number(ov.querySelector('#f_s').value||0),
+      };
+      state.products = ex ? state.products.map(p=>p.id===ex.id?data:p) : [...state.products, data];
+      await sSet('crm:products',state.products); ov.remove(); renderTab();
+    };
+  }
+
+  // ---------------- LEADS ----------------
+  function renderLeads(main, srcFilter, assignFilter){
+    srcFilter = srcFilter || 'all';
+    assignFilter = assignFilter || 'all';
+    let filtered = srcFilter==='all' ? state.leads : state.leads.filter(l=>(l.source||'Other')===srcFilter);
+    filtered = assignFilter==='all' ? filtered : (assignFilter==='unassigned' ? filtered.filter(l=>!l.assignedTo) : filtered.filter(l=>l.assignedTo===assignFilter));
+    const bySource = {};
+    state.leads.forEach(l=>{ const s=l.source||'Other'; bySource[s]=(bySource[s]||0)+1; });
+    function userName(username){ const u=users.find(x=>x.username===username); return u?u.name:username; }
+
+    main.innerHTML=`
+      <div class="vc-topbar">
+        <div><div class="vc-title">Leads</div><div class="vc-sub">${state.leads.length} total across India</div></div>
+        <div style="display:flex;gap:10px;flex-wrap:wrap;">
+          ${renderFilterDropdown('srcFilter', srcFilter, [{key:'all',label:'All sources'}, ...LEAD_SOURCES.map(s=>({key:s,label:s}))])}
+          ${renderFilterDropdown('assignFilter', assignFilter, [{key:'all',label:'Everyone'},{key:'unassigned',label:'Unassigned'}, ...users.map(u=>({key:u.username,label:u.name}))])}
+          <button class="vc-btn ghost" id="exportL">${ICONS.quote} Export</button>
+          <button class="vc-btn" id="addL">+ Add Lead</button>
+        </div>
+      </div>
+
+      <div class="vc-panel" style="padding:14px 18px;">
+        <div class="vc-panel-title" style="margin-bottom:10px;">Leads by Source</div>
+        <div style="display:flex;gap:8px;flex-wrap:wrap;">
+          ${LEAD_SOURCES.map(s=>`<span class="vc-badge src">${s}: ${bySource[s]||0}</span>`).join('')}
+        </div>
+      </div>
+
+      <div class="vc-panel">
+        ${filtered.length? `
+        <div style="overflow-x:auto;">
+        <table class="vc-table">
+          <thead><tr><th>Name</th><th>Product Required</th><th>Number</th><th>Source</th><th>State</th><th>District</th><th>Assigned</th><th>Follow-up</th><th>Status</th><th></th></tr></thead>
+          <tbody>${filtered.slice().sort((a,b)=>(b.createdAt||'').localeCompare(a.createdAt||'')).map(l=>{
+            const clean = cleanPhone(l.phone);
+            const today = todayStr();
+            let fuBadge='', fuLabel='';
+            if(l.followupDate){
+              if(l.followupDone){ fuBadge='done'; fuLabel='Done'; }
+              else if(l.followupDate<today){ fuBadge='overdue'; fuLabel='Overdue'; }
+              else if(l.followupDate===today){ fuBadge='today'; fuLabel='Today'; }
+              else { fuBadge='upcoming'; fuLabel='Upcoming'; }
+            }
+            return `
+            <tr>
+              <td><b>${escapeHtml(l.name)}</b></td>
+              <td>${escapeHtml(l.product||l.interest||'-')}</td>
+              <td>${escapeHtml(l.phone||'-')}</td>
+              <td><span class="vc-badge src">${escapeHtml(l.source||'Other')}</span></td>
+              <td>${escapeHtml(l.state||'-')}</td>
+              <td>${escapeHtml(l.district||'-')}</td>
+              <td>${renderFilterDropdown('assign-'+l.id, l.assignedTo||'', [{key:'',label:'Unassigned'}, ...users.map(u=>({key:u.username,label:u.name}))])}</td>
+              <td style="white-space:nowrap;">
+                <input type="date" class="vc-mini-date" data-fu="${l.id}" value="${l.followupDate||''}"/>
+                ${l.followupDate?`<div style="margin-top:4px;display:flex;align-items:center;gap:4px;justify-content:center;">
+                  <span class="vc-badge ${fuBadge}">${fuLabel}</span>
+                  ${!l.followupDone?`<button class="vc-btn ghost sm" data-fudone="${l.id}" style="padding:2px 6px;font-size:10px;">Done</button>`:''}
+                </div>`:''}
+              </td>
+              <td>${renderStatusDropdown(l.id, l.status, LEAD_STATUSES)}${l.status==='dnd'&&l.lossReason?`<div style="font-size:9.5px;color:var(--muted);margin-top:3px;">${escapeHtml(l.lossReason)}</div>`:''}</td>
+              <td style="text-align:right;white-space:nowrap;">
+                ${clean?`<a class="vc-iconbtn" href="tel:+91${clean}" title="Call">${ICONS.phone}</a>
+                <a class="vc-iconbtn wa" href="https://wa.me/91${clean}" target="_blank" title="WhatsApp">${ICONS.chat}</a>`:''}
+                <button type="button" class="vc-iconbtn" data-quote-lead="${l.id}" title="Create Quotation">${ICONS.quote}</button>
+                ${isAdmin()?`<button class="vc-btn danger sm" data-del="${l.id}" style="margin-left:4px;">Delete</button>`:''}
+              </td>
+            </tr>`;
+          }).join('')}</tbody>
+        </table>
+        </div>` : `<div class="vc-empty"><b>No leads yet</b>Add a lead to start your pipeline.</div>`}
+      </div>
+    `;
+    document.getElementById('exportL').onclick=()=>{
+      exportToCsv('leads.csv',
+        ['Name','Phone','Product Required','Source','State','District','Assigned To','Follow-up Date','Status','Loss Reason'],
+        filtered.map(l=>[l.name,l.phone,l.product||l.interest,l.source,l.state,l.district,userName(l.assignedTo),l.followupDate,statusLabel(l.status),l.lossReason])
+      );
+    };
+    document.getElementById('addL').onclick=()=>{
+      const ov=document.createElement('div'); ov.className='vc-overlay';
+      ov.innerHTML=`<div class="vc-modal"><h3>Add Lead</h3>
+        <div class="vc-field"><label>Name *</label><input id="f_n"/></div>
+        <div class="vc-field"><label>Number</label><input id="f_p" placeholder="10-digit mobile number"/></div>
+        <div class="vc-field"><label>Product Required</label><input id="f_prod" placeholder="e.g. Premium Package enquiry"/></div>
+        <div class="vc-field"><label>Source *</label><select id="f_src">${LEAD_SOURCES.map(s=>`<option value="${s}">${s}</option>`).join('')}</select></div>
+        <div class="vc-field"><label>State</label><input id="f_state"/></div>
+        <div class="vc-field"><label>District</label><input id="f_dist"/></div>
+        <div class="vc-field"><label>Assign To</label><select id="f_assign">
+          <option value="">Unassigned</option>
+          ${users.map(u=>`<option value="${u.username}">${escapeHtml(u.name)}</option>`).join('')}
+        </select></div>
+        <div class="vc-field"><label>Follow-up Date</label><input id="f_fu" type="date"/></div>
+        <div class="vc-modal-actions"><button class="vc-btn ghost" id="cx">Cancel</button><button class="vc-btn" id="sx">Save</button></div></div>`;
+      document.body.appendChild(ov);
+      ov.onclick=e=>{if(e.target===ov)ov.remove();};
+      ov.querySelector('#cx').onclick=()=>ov.remove();
+      ov.querySelector('#sx').onclick=async()=>{
+        const name=ov.querySelector('#f_n').value.trim();
+        if(!name){alert('Name required');return;}
+        const leadState = ov.querySelector('#f_state').value.trim();
+        const leadProduct = ov.querySelector('#f_prod').value.trim();
+        let assignTo = ov.querySelector('#f_assign').value||null;
+        if(!assignTo){
+          const matched = matchRoutingRule(leadState, leadProduct);
+          if(matched) assignTo = matched;
+        }
+        state.leads.push({
+          id:uid(), name,
+          phone:ov.querySelector('#f_p').value.trim(),
+          product:leadProduct,
+          source:ov.querySelector('#f_src').value,
+          state:leadState,
+          district:ov.querySelector('#f_dist').value.trim(),
+          assignedTo:assignTo,
+          followupDate:ov.querySelector('#f_fu').value||null, followupDone:false,
+          status:'followup', createdAt:todayStr()
+        });
+        await sSet('crm:leads',state.leads); ov.remove(); renderTab();
+      };
+    };
+    wireStatusDropdowns(main, async (targetId, value)=>{
+      if(targetId==='srcFilter'){ renderLeads(main, value, assignFilter); return; }
+      if(targetId==='assignFilter'){ renderLeads(main, srcFilter, value); return; }
+      if(targetId.startsWith('assign-')){
+        const leadId = targetId.slice(7);
+        state.leads=state.leads.map(l=>l.id===leadId?{...l,assignedTo:value||null}:l);
+        await sSet('crm:leads',state.leads); renderTab(); return;
+      }
+      if(value==='dnd'){
+        pickLossReason(async (reason)=>{
+          state.leads=state.leads.map(l=>l.id===targetId?{...l,status:value,lossReason:reason}:l);
+          await sSet('crm:leads',state.leads); renderTab();
+        });
+        return;
+      }
+      state.leads=state.leads.map(l=>l.id===targetId?{...l,status:value}:l);
+      await sSet('crm:leads',state.leads); renderTab();
+    });
+    main.querySelectorAll('[data-fu]').forEach(inp=>inp.onchange=async()=>{
+      state.leads=state.leads.map(l=>l.id===inp.dataset.fu?{...l,followupDate:inp.value||null,followupDone:false}:l);
+      await sSet('crm:leads',state.leads); renderTab();
+    });
+    main.querySelectorAll('[data-fudone]').forEach(b=>b.onclick=async()=>{
+      state.leads=state.leads.map(l=>l.id===b.dataset.fudone?{...l,followupDone:true}:l);
+      await sSet('crm:leads',state.leads); renderTab();
+    });
+    main.querySelectorAll('[data-quote-lead]').forEach(b=>b.onclick=async()=>{
+      const lead = state.leads.find(l=>l.id===b.dataset.quoteLead);
+      if(lead) await quotationFromLead(lead);
+    });
+    main.querySelectorAll('[data-del]').forEach(b=>b.onclick=async()=>{
+      if(!isAdmin())return;
+      if(!confirm('Delete this lead?'))return;
+      state.leads=state.leads.filter(l=>l.id!==b.dataset.del);
+      await sSet('crm:leads',state.leads); renderTab();
+    });
+  }
+
+  function pickLossReason(callback){
+    const ov=document.createElement('div'); ov.className='vc-overlay';
+    ov.innerHTML=`<div class="vc-modal" style="width:360px;"><h3>Why was this deal lost?</h3>
+      <p style="font-size:12px;color:var(--muted);margin:-10px 0 14px;">Pick a reason — this helps track why deals don't close.</p>
+      <div id="lrOptions">
+        ${LOSS_REASONS.map((r,i)=>`
+          <div class="vc-status-option" data-lr="${escapeHtml(r)}" style="margin-bottom:3px;">
+            <span class="vc-status-dot" style="background:var(--red);"></span>
+            <span class="vc-status-label">${escapeHtml(r)}</span>
+          </div>`).join('')}
+      </div>
+      <div class="vc-field" id="lrOtherWrap" style="display:none;margin-top:10px;"><label>Please specify</label><input id="lrOtherText" placeholder="Type the reason"/></div>
+      <div class="vc-modal-actions"><button class="vc-btn ghost" id="cx">Cancel</button></div>
+    </div>`;
+    document.body.appendChild(ov);
+    ov.onclick=e=>{if(e.target===ov)ov.remove();};
+    ov.querySelector('#cx').onclick=()=>ov.remove();
+    ov.querySelectorAll('[data-lr]').forEach(opt=>{
+      opt.onclick=()=>{
+        const reason = opt.dataset.lr;
+        if(reason==='Other'){
+          ov.querySelector('#lrOtherWrap').style.display='block';
+          ov.querySelectorAll('[data-lr]').forEach(o=>o.classList.remove('active'));
+          opt.classList.add('active');
+          let otherBtn = ov.querySelector('#lrOtherSave');
+          if(!otherBtn){
+            const actions = ov.querySelector('.vc-modal-actions');
+            const btn = document.createElement('button');
+            btn.className='vc-btn'; btn.id='lrOtherSave'; btn.textContent='Save Reason';
+            actions.appendChild(btn);
+            btn.onclick=()=>{
+              const txt = ov.querySelector('#lrOtherText').value.trim();
+              ov.remove(); callback(txt||'Other');
+            };
+          }
+        } else {
+          ov.remove(); callback(reason);
+        }
+      };
+    });
+  }
+
+  async function quotationFromLead(lead){
+    let cust = state.customers.find(c=>c.phone && lead.phone && cleanPhone(c.phone)===cleanPhone(lead.phone));
+    if(!cust){
+      cust = {
+        id:uid(), name:lead.name, company:'', type:'B2C', phone:lead.phone||'',
+        contactPerson:'', address:'', state:lead.state||'', gstin:'', paymentTerms:'',
+        createdAt: todayStr()
+      };
+      state.customers.push(cust);
+      await sSet('crm:customers2', state.customers);
+    }
+    addQuotationModal(cust.id);
+  }
+
+  // ---------------- SALES ----------------
+  function renderSales(main){
+    main.innerHTML=`
+      <div class="vc-topbar">
+        <div><div class="vc-title">Orders</div><div class="vc-sub">${state.sales.length} total${isAdmin()?` · ${fmtMoney(state.sales.reduce((s,x)=>s+Number(x.amount||0),0))} lifetime`:''}</div></div>
+        <div style="display:flex;gap:10px;">
+          ${isAdmin()?`<button class="vc-btn ghost" id="exportS">${ICONS.quote} Export</button>`:''}
+          <button class="vc-btn" id="addS">+ Add Order</button>
+        </div>
+      </div>
+      <div class="vc-panel">
+        ${state.sales.length? `
+        <div style="overflow-x:auto;">
+        <table class="vc-table">
+          <thead><tr><th>Customer</th><th>Items</th><th>Amount</th><th>Status</th><th>Date</th><th></th></tr></thead>
+          <tbody>${state.sales.slice().sort((a,b)=>(b.date||'').localeCompare(a.date||'')).map(s=>`
+            <tr>
+              <td><b>${escapeHtml(s.customerName)}</b></td>
+              <td style="max-width:220px;">${escapeHtml(saleItemsSummary(s))}</td>
+              <td>${fmtMoney(s.amount)}</td>
+              <td>${renderStatusDropdown(s.id, s.status, [{key:'pending',label:'Pending'},{key:'paid',label:'Paid'}])}</td>
+              <td>${fmtDate(s.date)}</td>
+              <td style="text-align:right;white-space:nowrap;">
+                <button class="vc-btn ghost sm" data-quote="${s.id}">Quotation</button>
+                ${isAdmin()?`<button class="vc-btn danger sm" data-del="${s.id}">Delete</button>`:''}
+              </td>
+            </tr>`).join('')}</tbody>
+        </table>
+        </div>` : `<div class="vc-empty"><b>No sales yet</b>Record your first sale.</div>`}
+      </div>
+    `;
+    document.getElementById('addS').onclick=()=>addSaleModal();
+    if(isAdmin()){
+      document.getElementById('exportS').onclick=()=>{
+        exportToCsv('orders.csv',
+          ['Customer','Items','Subtotal','Discount','GST %','GST Amount','Amount','Status','Sales Executive','Date'],
+          state.sales.map(s=>[s.customerName, saleItemsSummary(s), s.subtotal, s.discount, s.gstPercent, s.gstAmount, s.amount, s.status, s.salesExecutive, fmtDate(s.date)])
+        );
+      };
+    }
+    wireStatusDropdowns(main, async (saleId, newStatus)=>{
+      state.sales=state.sales.map(x=>x.id===saleId?{...x,status:newStatus}:x);
+      await sSet('crm:sales',state.sales); renderTab();
+    });
+    main.querySelectorAll('[data-quote]').forEach(b=>b.onclick=()=>{
+      const sale = state.sales.find(x=>x.id===b.dataset.quote);
+      if(sale) showQuotation(sale);
+    });
+    main.querySelectorAll('[data-del]').forEach(b=>b.onclick=async()=>{
+      if(!isAdmin())return;
+      if(!confirm('Delete this sale?'))return;
+      state.sales=state.sales.filter(x=>x.id!==b.dataset.del);
+      await sSet('crm:sales',state.sales); renderTab();
+    });
+  }
+
+  function addSaleModal(){
+    if(state.customers.length===0){alert('Add a customer first (Customers tab).');return;}
+    if(state.products.length===0){alert('Add a product first (Products tab).');return;}
+    const ov=document.createElement('div'); ov.className='vc-overlay';
+    document.body.appendChild(ov);
+    const form = {
+      customerId: state.customers[0].id,
+      items: [{productId: state.products[0].id, qty:1, price:null}],
+      status:'pending',
+      discount: 0,
+      gstPercent: state.settings.gstPercent||12,
+      date: todayStr()
+    };
+    function priceFor(productId, customerId){
+      const p = state.products.find(x=>x.id===productId);
+      const c = state.customers.find(x=>x.id===customerId);
+      if(!p) return 0;
+      return (c && c.type==='B2B') ? (p.ndpPrice||0) : (p.customerPrice||0);
+    }
+    function draw(){
+      let subtotal=0;
+      const rowsHtml = form.items.map((it,idx)=>{
+        const unit = it.price!=null ? it.price : priceFor(it.productId, form.customerId);
+        const sub = unit*(it.qty||0);
+        subtotal += sub;
+        return `<div style="display:flex;gap:6px;align-items:center;margin-bottom:8px;">
+          <select data-li-prod="${idx}" style="flex:2;padding:7px 6px;border-radius:6px;border:1px solid var(--line);font-size:12px;">
+            ${state.products.map(p=>`<option value="${p.id}" ${p.id===it.productId?'selected':''}>${escapeHtml(p.name)}</option>`).join('')}
+          </select>
+          <input data-li-qty="${idx}" type="number" min="1" value="${it.qty}" style="width:50px;padding:7px 6px;border-radius:6px;border:1px solid var(--line);font-size:12px;"/>
+          <input data-li-price="${idx}" type="number" value="${unit}" style="width:80px;padding:7px 6px;border-radius:6px;border:1px solid var(--line);font-size:12px;"/>
+          <span style="width:72px;font-size:11.5px;text-align:right;color:var(--ink-soft);">${fmtMoney(sub)}</span>
+          <button type="button" data-li-del="${idx}" style="border:none;background:none;color:var(--red);cursor:pointer;font-size:15px;line-height:1;">✕</button>
+        </div>`;
+      }).join('');
+      const taxable = Math.max(0, subtotal - (form.discount||0));
+      const gstAmt = taxable * (form.gstPercent||0)/100;
+      const grandTotal = taxable + gstAmt;
+      const cust = state.customers.find(c=>c.id===form.customerId);
+      ov.innerHTML = `<div class="vc-modal" style="width:460px;"><h3>Add Order</h3>
+        <div class="vc-field"><label>Customer *</label>
+          <select id="f_c">${state.customers.map(c=>`<option value="${c.id}" ${c.id===form.customerId?'selected':''}>${escapeHtml(c.name)}${c.type==='B2B'?' (B2B)':''}</option>`).join('')}</select>
+        </div>
+        <div class="vc-field"><label>Items</label>
+          <div id="liWrap">${rowsHtml}</div>
+          <button type="button" class="vc-btn ghost sm" id="addItemBtn">+ Add product</button>
+        </div>
+        <div style="display:flex;gap:10px;">
+          <div class="vc-field" style="flex:1;"><label>Discount (₹)</label><input id="f_disc" type="number" value="${form.discount}"/></div>
+          <div class="vc-field" style="flex:1;"><label>GST %</label><input id="f_gst" type="number" value="${form.gstPercent}"/></div>
+        </div>
+        <div style="font-size:12.5px;color:var(--ink-soft);margin:6px 0 4px;">
+          <div style="display:flex;justify-content:space-between;"><span>Subtotal</span><span>${fmtMoney(subtotal)}</span></div>
+          <div style="display:flex;justify-content:space-between;"><span>Discount</span><span>- ${fmtMoney(form.discount)}</span></div>
+          <div style="display:flex;justify-content:space-between;"><span>Taxable Amount</span><span>${fmtMoney(taxable)}</span></div>
+          <div style="display:flex;justify-content:space-between;"><span>GST (${form.gstPercent}%)</span><span>${fmtMoney(gstAmt)}</span></div>
+        </div>
+        <div style="display:flex;justify-content:space-between;font-weight:700;font-size:14px;margin:8px 0 12px;padding-top:10px;border-top:1px solid var(--line);">
+          <span>Grand Total</span><span>${fmtMoney(grandTotal)}</span>
+        </div>
+        <div class="vc-field"><label>Status</label><select id="f_s"><option value="pending" ${form.status==='pending'?'selected':''}>Pending</option><option value="paid" ${form.status==='paid'?'selected':''}>Paid</option></select></div>
+        <div class="vc-field"><label>Date</label><input id="f_d" type="date" value="${form.date}"/></div>
+        <div class="vc-modal-actions"><button class="vc-btn ghost" id="cx">Cancel</button><button class="vc-btn" id="sx">Save</button></div>
+      </div>`;
+      ov.querySelector('#f_c').onchange = e=>{ form.customerId = e.target.value; form.items.forEach(it=>it.price=null); draw(); };
+      ov.querySelector('#addItemBtn').onclick = ()=>{ form.items.push({productId:state.products[0].id, qty:1, price:null}); draw(); };
+      ov.querySelectorAll('[data-li-prod]').forEach(sel=>sel.onchange=e=>{ const i=+e.target.dataset.liProd; form.items[i].productId=e.target.value; form.items[i].price=null; draw(); });
+      ov.querySelectorAll('[data-li-qty]').forEach(inp=>inp.onchange=e=>{ const i=+e.target.dataset.liQty; form.items[i].qty=Math.max(1,Number(e.target.value||1)); draw(); });
+      ov.querySelectorAll('[data-li-price]').forEach(inp=>inp.onchange=e=>{ const i=+e.target.dataset.liPrice; form.items[i].price=Number(e.target.value||0); draw(); });
+      ov.querySelectorAll('[data-li-del]').forEach(btn=>btn.onclick=e=>{ const i=+e.target.dataset.liDel; if(form.items.length>1){ form.items.splice(i,1); draw(); } });
+      ov.querySelector('#f_disc').onchange = e=>{ form.discount = Number(e.target.value||0); draw(); };
+      ov.querySelector('#f_gst').onchange = e=>{ form.gstPercent = Number(e.target.value||0); draw(); };
+      ov.querySelector('#f_s').onchange = e=>{ form.status = e.target.value; };
+      ov.querySelector('#f_d').onchange = e=>{ form.date = e.target.value; };
+      ov.querySelector('#cx').onclick=()=>ov.remove();
+      ov.querySelector('#sx').onclick=async()=>{
+        const custNow = state.customers.find(c=>c.id===form.customerId);
+        const items = form.items.map(it=>{
+          const p = state.products.find(x=>x.id===it.productId);
+          const unit = it.price!=null ? it.price : priceFor(it.productId, form.customerId);
+          return {productId:it.productId, productName:p?p.name:'-', qty:it.qty, price:unit};
+        });
+        const sub = items.reduce((s,it)=>s+it.price*it.qty,0);
+        const disc = form.discount||0;
+        const taxableAmt = Math.max(0, sub-disc);
+        const gstAmtFinal = taxableAmt*(form.gstPercent||0)/100;
+        state.sales.push({
+          id:uid(), customerId:form.customerId, customerName:custNow?custNow.name:'-',
+          items, subtotal:sub, discount:disc, gstPercent:form.gstPercent, taxableAmount:taxableAmt, gstAmount:gstAmtFinal,
+          amount: taxableAmt+gstAmtFinal,
+          salesExecutive: session.name || session.username, createdBy: session.username,
+          status: ov.querySelector('#f_s') ? ov.querySelector('#f_s').value : form.status,
+          date: ov.querySelector('#f_d') ? (ov.querySelector('#f_d').value||todayStr()) : form.date
+        });
+        await sSet('crm:sales',state.sales); ov.remove(); renderTab();
+      };
+    }
+    draw();
+    ov.addEventListener('click', e=>{ if(e.target===ov) ov.remove(); });
+  }
+
+  function showQuotation(sale){
+    const cust = state.customers.find(c=>c.id===sale.customerId);
+    const items = sale.items && sale.items.length ? sale.items : [{productName:sale.item||'-', qty:1, price:sale.amount}];
+    const s = state.settings;
+    const subtotal = sale.subtotal!=null ? sale.subtotal : items.reduce((sum,it)=>sum+it.price*it.qty,0);
+    const discount = sale.discount||0;
+    const gstPercent = sale.gstPercent!=null ? sale.gstPercent : (s.gstPercent||0);
+    const taxable = sale.taxableAmount!=null ? sale.taxableAmount : Math.max(0, subtotal-discount);
+    const gstAmount = sale.gstAmount!=null ? sale.gstAmount : taxable*gstPercent/100;
+    const grandTotal = sale.amount!=null ? sale.amount : taxable+gstAmount;
+    const quotNo = sale.quotationNo || ('#'+sale.id.slice(-6).toUpperCase());
+    const validDate = sale.validityDays ? new Date(new Date(sale.date).getTime() + sale.validityDays*86400000) : null;
+
+    const ov = document.createElement('div'); ov.className='vc-overlay';
+    ov.innerHTML = `
+      <div class="vc-quot-page">
+        <div class="vc-quot-top">
+          <div style="max-width:56%;">
+            <div class="vc-quot-company-name">${escapeHtml(s.name)}</div>
+            <div class="vc-quot-tagline">${escapeHtml(s.tagline)}</div>
+            <div class="vc-quot-companyinfo">
+              ${s.manufacturerLine?`<b>Business:</b> ${escapeHtml(s.manufacturerLine)}<br/>`:''}
+              ${s.address?`<b>Address:</b> ${escapeHtml(s.address)}<br/>`:''}
+              ${(s.mobile1||s.mobile2)?`<b>Mobile:</b> ${escapeHtml([s.mobile1,s.mobile2].filter(Boolean).join(' / '))}<br/>`:''}
+              ${(s.email||s.website)?`${s.email?'<b>Email:</b> '+escapeHtml(s.email):''}${s.email&&s.website?' | ':''}${s.website?'<b>Website:</b> '+escapeHtml(s.website):''}<br/>`:''}
+              ${s.gstin?`<b>GSTIN:</b> ${escapeHtml(s.gstin)}`:''}
+            </div>
+          </div>
+          <div style="text-align:right;min-width:200px;">
+            <div class="vc-quot-badge">COMMERCIAL QUOTATION</div>
+            <div class="vc-quot-meta2">
+              <div><b>Quotation No.:</b> ${escapeHtml(quotNo)}</div>
+              <div><b>Date:</b> ${fmtDate(sale.date)}</div>
+              ${validDate?`<div><b>Validity:</b> ${fmtDate(validDate)} (${sale.validityDays} Days)</div>`:''}
+              <div><b>Sales Executive:</b> ${escapeHtml(sale.salesExecutive||session.name||session.username)}</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="vc-quot-clientbox">
+          <div class="vc-quot-clientbox-title">Client / Dealer Information ${cust&&cust.type==='B2B'?'(B2B Dealer)':'(B2C Client)'}</div>
+          <div class="vc-quot-client-grid">
+            <div><b>Firm / Client Name:</b> ${escapeHtml(cust?(cust.company?cust.company+' / ':'')+cust.name:sale.customerName)}</div>
+            <div><b>Address:</b> ${escapeHtml(cust&&cust.address?cust.address:(cust&&cust.state?cust.state:'-'))}</div>
+            <div><b>Contact Person:</b> ${escapeHtml(cust&&cust.contactPerson?cust.contactPerson:(cust?cust.name:'-'))}</div>
+            <div><b>GSTIN:</b> ${cust&&cust.gstin?escapeHtml(cust.gstin):'-'}</div>
+            <div><b>Mobile No.:</b> ${escapeHtml(cust&&cust.phone?cust.phone:'-')}</div>
+            <div><b>Payment Terms:</b> ${escapeHtml(sale.paymentTerms||(cust&&cust.paymentTerms)||'-')}</div>
+          </div>
+        </div>
+
+        <table class="vc-quot-items-table">
+          <thead><tr><th style="width:30px;">Sr.</th><th>Product Name &amp; Technical Specifications</th><th>HSN</th><th>Qty</th><th>Unit Price (₹)</th><th>Total (₹)</th></tr></thead>
+          <tbody>${items.map((it,i)=>{
+            const p = state.products.find(x=>x.id===it.productId);
+            return `<tr>
+              <td>${i+1}</td>
+              <td><b>${escapeHtml(it.productName)}</b>${p&&p.specs?`<div class="specs">• ${escapeHtml(p.specs).replace(/\|/g,'</br>• ').replace(/<\/br>/g,'<br>')}</div>`:''}</td>
+              <td>${p&&p.hsn?escapeHtml(p.hsn):'-'}</td>
+              <td>${it.qty} ${p&&p.unit?escapeHtml(p.unit):'Unit'}</td>
+              <td>${fmtMoney(it.price)}</td>
+              <td><b>${fmtMoney(it.price*it.qty)}</b></td>
+            </tr>`;
+          }).join('')}</tbody>
+        </table>
+
+        <div class="vc-quot-footer-grid">
+          <div>
+            ${(s.bankName||s.accountNo)?`
+            <div class="vc-quot-bank">
+              <b style="display:block;margin-bottom:6px;color:var(--forest);">Bank Account Details</b>
+              ${s.bankName?`<b>Bank:</b> ${escapeHtml(s.bankName)}${s.bankBranch?' | <b>Branch:</b> '+escapeHtml(s.bankBranch):''}<br/>`:''}
+              ${s.accountName?`<b>Account Name:</b> ${escapeHtml(s.accountName)}<br/>`:''}
+              ${s.accountNo?`<b>Account No.:</b> ${escapeHtml(s.accountNo)}${s.ifsc?' | <b>IFSC:</b> '+escapeHtml(s.ifsc):''}`:''}
+            </div>` : ''}
+            ${s.bookingNote?`<div class="vc-quot-booking-note">💡 <b>Note:</b> ${escapeHtml(s.bookingNote)}</div>`:''}
+          </div>
+          <div class="vc-quot-totals">
+            <div class="vc-quot-totals-row"><span>Subtotal</span><span>${fmtMoney(subtotal)}</span></div>
+            <div class="vc-quot-totals-row"><span>Discount</span><span>- ${fmtMoney(discount)}</span></div>
+            <div class="vc-quot-totals-row"><span>Taxable Amount</span><span>${fmtMoney(taxable)}</span></div>
+            <div class="vc-quot-totals-row"><span>GST (${gstPercent}%)</span><span>${fmtMoney(gstAmount)}</span></div>
+            <div class="vc-quot-totals-row grand"><span>Grand Total</span><span>${fmtMoney(grandTotal)}</span></div>
+            <div class="vc-quot-words">* In Words: ${amountInWords(grandTotal)}</div>
+          </div>
+        </div>
+
+        ${s.terms&&s.terms.length?`
+        <div class="vc-quot-terms">
+          <div class="vc-quot-terms-title">Terms &amp; Conditions</div>
+          <ul>${s.terms.map(t=>`<li>${escapeHtml(t)}</li>`).join('')}</ul>
+        </div>` : ''}
+
+        <div class="vc-quot-sign">
+          <div class="vc-quot-sign-line">Client / Dealer Signature &amp; Seal</div>
+          <div style="text-align:center;">
+            <div style="margin-bottom:34px;font-weight:600;">For ${escapeHtml(s.name)}</div>
+            <div class="vc-quot-sign-line">Authorized Signatory / Sales Manager</div>
+          </div>
+        </div>
+
+        <div class="vc-quot-actions">
+          <button class="vc-btn ghost" id="qClose">Close</button>
+          ${cust&&cust.phone?`<button class="vc-btn ghost" id="qWa">${ICONS.chat} WhatsApp</button>`:''}
+          <button class="vc-btn" id="qPrint">Print / Save PDF</button>
+        </div>
+      </div>
+    `;
+    document.body.appendChild(ov);
+    ov.querySelector('#qClose').onclick=()=>ov.remove();
+    ov.querySelector('#qPrint').onclick=()=>window.print();
+    const waBtn = ov.querySelector('#qWa');
+    if(waBtn) waBtn.onclick=()=>sendQuotationWhatsApp(sale);
+    ov.addEventListener('click', e=>{ if(e.target===ov) ov.remove(); });
+  }
+
+  function sendQuotationWhatsApp(q){
+    const cust = state.customers.find(c=>c.id===q.customerId);
+    const clean = cleanPhone(cust?cust.phone:'');
+    if(!clean){ alert('This customer has no phone number saved.'); return; }
+    const items = q.items && q.items.length ? q.items : [{productName:q.item||'-', qty:1, price:q.amount}];
+    const quotNo = q.quotationNo ? ` (${q.quotationNo})` : '';
+    let msg = `*${state.settings.name} — Quotation${quotNo}*\n\n`;
+    items.forEach((it,i)=>{ msg += `${i+1}. ${it.productName} x${it.qty} — ${fmtMoney(it.price*it.qty)}\n`; });
+    msg += `\n*Grand Total: ${fmtMoney(q.amount)}*\n\nThank you for your interest!`;
+    window.open(`https://wa.me/91${clean}?text=${encodeURIComponent(msg)}`, '_blank');
+  }
+
+  // ---------------- QUOTATIONS ----------------
+  function renderQuotations(main){
+    main.innerHTML=`
+      <div class="vc-topbar">
+        <div><div class="vc-title">Quotations</div><div class="vc-sub">${state.quotations.length} created</div></div>
+        <button class="vc-btn" id="addQ">+ Create Quotation</button>
+      </div>
+      <div class="vc-panel">
+        ${state.quotations.length? `
+        <div style="overflow-x:auto;">
+        <table class="vc-table">
+          <thead><tr><th>Quotation #</th><th>Customer</th><th>Items</th><th>Amount</th><th>Date</th><th></th></tr></thead>
+          <tbody>${state.quotations.slice().sort((a,b)=>(b.date||'').localeCompare(a.date||'')).map(q=>{
+            const cust = state.customers.find(c=>c.id===q.customerId);
+            const clean = cust ? cleanPhone(cust.phone) : '';
+            return `
+            <tr>
+              <td>${escapeHtml(q.quotationNo||('#'+q.id.slice(-6).toUpperCase()))}</td>
+              <td><b>${escapeHtml(q.customerName)}</b></td>
+              <td style="max-width:220px;">${escapeHtml(saleItemsSummary(q))}</td>
+              <td>${fmtMoney(q.amount)}</td>
+              <td>${fmtDate(q.date)}</td>
+              <td style="text-align:right;white-space:nowrap;">
+                <button class="vc-btn ghost sm" data-view="${q.id}">View</button>
+                ${clean?`<button class="vc-btn ghost sm" data-wa="${q.id}">${ICONS.chat} Send</button>`:''}
+                <button class="vc-btn ghost sm" data-convert="${q.id}">${ICONS.trend} Create Order</button>
+                ${isAdmin()?`<button class="vc-btn danger sm" data-del="${q.id}">Delete</button>`:''}
+              </td>
+            </tr>`;
+          }).join('')}</tbody>
+        </table>
+        </div>` : `<div class="vc-empty"><b>No quotations yet</b>Create one to send to a dealer or customer.</div>`}
+      </div>
+    `;
+    document.getElementById('addQ').onclick=()=>addQuotationModal();
+    main.querySelectorAll('[data-view]').forEach(b=>b.onclick=()=>{
+      const q = state.quotations.find(x=>x.id===b.dataset.view);
+      if(q) showQuotation(q);
+    });
+    main.querySelectorAll('[data-wa]').forEach(b=>b.onclick=()=>{
+      const q = state.quotations.find(x=>x.id===b.dataset.wa);
+      if(q) sendQuotationWhatsApp(q);
+    });
+    main.querySelectorAll('[data-convert]').forEach(b=>b.onclick=async()=>{
+      const q = state.quotations.find(x=>x.id===b.dataset.convert);
+      if(!q) return;
+      if(!confirm('Create a confirmed Order from this quotation?')) return;
+      state.sales.push({
+        id:uid(), customerId:q.customerId, customerName:q.customerName, items:q.items,
+        subtotal:q.subtotal, discount:q.discount, gstPercent:q.gstPercent, taxableAmount:q.taxableAmount, gstAmount:q.gstAmount,
+        amount:q.amount, salesExecutive:q.salesExecutive, status:'pending', date:todayStr()
+      });
+      await sSet('crm:sales', state.sales);
+      renderTab();
+    });
+    main.querySelectorAll('[data-del]').forEach(b=>b.onclick=async()=>{
+      if(!isAdmin())return;
+      if(!confirm('Delete this quotation?'))return;
+      state.quotations=state.quotations.filter(q=>q.id!==b.dataset.del);
+      await sSet('crm:quotations',state.quotations); renderTab();
+    });
+  }
+
+  function addQuotationModal(presetCustomerId){
+    if(state.customers.length===0){alert('Add a customer first (Customers tab).');return;}
+    if(state.products.length===0){alert('Add a product first (Products tab).');return;}
+    const ov=document.createElement('div'); ov.className='vc-overlay';
+    document.body.appendChild(ov);
+    const firstCust = (presetCustomerId && state.customers.find(c=>c.id===presetCustomerId)) || state.customers[0];
+    const form = {
+      customerId: firstCust.id,
+      items: [{productId: state.products[0].id, qty:1, price:null}],
+      discount: 0,
+      gstPercent: state.settings.gstPercent||12,
+      validityDays: state.settings.validityDays||7,
+      paymentTerms: firstCust.paymentTerms || state.settings.paymentTerms || '',
+      date: todayStr()
+    };
+    function priceFor(productId, customerId){
+      const p = state.products.find(x=>x.id===productId);
+      const c = state.customers.find(x=>x.id===customerId);
+      if(!p) return 0;
+      return (c && c.type==='B2B') ? (p.ndpPrice||0) : (p.customerPrice||0);
+    }
+    function draw(){
+      let subtotal=0;
+      const rowsHtml = form.items.map((it,idx)=>{
+        const unit = it.price!=null ? it.price : priceFor(it.productId, form.customerId);
+        const sub = unit*(it.qty||0);
+        subtotal += sub;
+        return `<div style="display:flex;gap:6px;align-items:center;margin-bottom:8px;">
+          <select data-li-prod="${idx}" style="flex:2;padding:7px 6px;border-radius:6px;border:1px solid var(--line);font-size:12px;">
+            ${state.products.map(p=>`<option value="${p.id}" ${p.id===it.productId?'selected':''}>${escapeHtml(p.name)}</option>`).join('')}
+          </select>
+          <input data-li-qty="${idx}" type="number" min="1" value="${it.qty}" style="width:50px;padding:7px 6px;border-radius:6px;border:1px solid var(--line);font-size:12px;"/>
+          <input data-li-price="${idx}" type="number" value="${unit}" style="width:80px;padding:7px 6px;border-radius:6px;border:1px solid var(--line);font-size:12px;"/>
+          <span style="width:72px;font-size:11.5px;text-align:right;color:var(--ink-soft);">${fmtMoney(sub)}</span>
+          <button type="button" data-li-del="${idx}" style="border:none;background:none;color:var(--red);cursor:pointer;font-size:15px;line-height:1;">✕</button>
+        </div>`;
+      }).join('');
+      const taxable = Math.max(0, subtotal-(form.discount||0));
+      const gstAmt = taxable*(form.gstPercent||0)/100;
+      const grandTotal = taxable+gstAmt;
+      ov.innerHTML = `<div class="vc-modal" style="width:480px;"><h3>Create Quotation</h3>
+        <div class="vc-field"><label>Customer / Dealer *</label>
+          <select id="f_c">${state.customers.map(c=>`<option value="${c.id}" ${c.id===form.customerId?'selected':''}>${escapeHtml(c.name)}${c.type==='B2B'?' (B2B)':''}</option>`).join('')}</select>
+        </div>
+        <div class="vc-field"><label>Items</label>
+          <div id="liWrap">${rowsHtml}</div>
+          <button type="button" class="vc-btn ghost sm" id="addItemBtn">+ Add product</button>
+        </div>
+        <div style="display:flex;gap:10px;">
+          <div class="vc-field" style="flex:1;"><label>Discount (₹)</label><input id="f_disc" type="number" value="${form.discount}"/></div>
+          <div class="vc-field" style="flex:1;"><label>GST %</label><input id="f_gst" type="number" value="${form.gstPercent}"/></div>
+        </div>
+        <div style="font-size:12.5px;color:var(--ink-soft);margin:6px 0 4px;">
+          <div style="display:flex;justify-content:space-between;"><span>Subtotal</span><span>${fmtMoney(subtotal)}</span></div>
+          <div style="display:flex;justify-content:space-between;"><span>Discount</span><span>- ${fmtMoney(form.discount)}</span></div>
+          <div style="display:flex;justify-content:space-between;"><span>Taxable Amount</span><span>${fmtMoney(taxable)}</span></div>
+          <div style="display:flex;justify-content:space-between;"><span>GST (${form.gstPercent}%)</span><span>${fmtMoney(gstAmt)}</span></div>
+        </div>
+        <div style="display:flex;justify-content:space-between;font-weight:700;font-size:14px;margin:8px 0 12px;padding-top:10px;border-top:1px solid var(--line);">
+          <span>Grand Total</span><span>${fmtMoney(grandTotal)}</span>
+        </div>
+        <div class="vc-field"><label>Payment Terms</label><input id="f_pay" value="${escapeHtml(form.paymentTerms)}"/></div>
+        <div style="display:flex;gap:10px;">
+          <div class="vc-field" style="flex:1;"><label>Validity (days)</label><input id="f_val" type="number" value="${form.validityDays}"/></div>
+          <div class="vc-field" style="flex:1;"><label>Date</label><input id="f_d" type="date" value="${form.date}"/></div>
+        </div>
+        <div class="vc-modal-actions"><button class="vc-btn ghost" id="cx">Cancel</button><button class="vc-btn" id="sx">Save Quotation</button></div>
+      </div>`;
+      ov.querySelector('#f_c').onchange = e=>{
+        form.customerId = e.target.value; form.items.forEach(it=>it.price=null);
+        const c = state.customers.find(x=>x.id===form.customerId);
+        if(c && c.paymentTerms) form.paymentTerms = c.paymentTerms;
+        draw();
+      };
+      ov.querySelector('#addItemBtn').onclick = ()=>{ form.items.push({productId:state.products[0].id, qty:1, price:null}); draw(); };
+      ov.querySelectorAll('[data-li-prod]').forEach(sel=>sel.onchange=e=>{ const i=+e.target.dataset.liProd; form.items[i].productId=e.target.value; form.items[i].price=null; draw(); });
+      ov.querySelectorAll('[data-li-qty]').forEach(inp=>inp.onchange=e=>{ const i=+e.target.dataset.liQty; form.items[i].qty=Math.max(1,Number(e.target.value||1)); draw(); });
+      ov.querySelectorAll('[data-li-price]').forEach(inp=>inp.onchange=e=>{ const i=+e.target.dataset.liPrice; form.items[i].price=Number(e.target.value||0); draw(); });
+      ov.querySelectorAll('[data-li-del]').forEach(btn=>btn.onclick=e=>{ const i=+e.target.dataset.liDel; if(form.items.length>1){ form.items.splice(i,1); draw(); } });
+      ov.querySelector('#f_disc').onchange = e=>{ form.discount = Number(e.target.value||0); draw(); };
+      ov.querySelector('#f_gst').onchange = e=>{ form.gstPercent = Number(e.target.value||0); draw(); };
+      ov.querySelector('#f_pay').onchange = e=>{ form.paymentTerms = e.target.value; };
+      ov.querySelector('#f_val').onchange = e=>{ form.validityDays = Number(e.target.value||7); };
+      ov.querySelector('#f_d').onchange = e=>{ form.date = e.target.value; };
+      ov.querySelector('#cx').onclick=()=>ov.remove();
+      ov.querySelector('#sx').onclick=async()=>{
+        const custNow = state.customers.find(c=>c.id===form.customerId);
+        const items = form.items.map(it=>{
+          const p = state.products.find(x=>x.id===it.productId);
+          const unit = it.price!=null ? it.price : priceFor(it.productId, form.customerId);
+          return {productId:it.productId, productName:p?p.name:'-', qty:it.qty, price:unit};
+        });
+        const sub = items.reduce((s,it)=>s+it.price*it.qty,0);
+        const disc = form.discount||0;
+        const taxableAmt = Math.max(0, sub-disc);
+        const gstAmtFinal = taxableAmt*(form.gstPercent||0)/100;
+        const payTerms = ov.querySelector('#f_pay') ? ov.querySelector('#f_pay').value.trim() : form.paymentTerms;
+        state.quotations.push({
+          id:uid(), quotationNo: nextQuotationNo(),
+          customerId:form.customerId, customerName:custNow?custNow.name:'-',
+          items, subtotal:sub, discount:disc, gstPercent:form.gstPercent, taxableAmount:taxableAmt, gstAmount:gstAmtFinal,
+          amount: taxableAmt+gstAmtFinal,
+          paymentTerms: payTerms, validityDays: form.validityDays,
+          salesExecutive: session.name || session.username,
+          date: ov.querySelector('#f_d') ? (ov.querySelector('#f_d').value||todayStr()) : form.date,
+          createdBy: session.username
+        });
+        state.settings.nextQuotationSeq = (state.settings.nextQuotationSeq||1) + 1;
+        await sSet('crm:quotations',state.quotations);
+        await sSet('crm:settings', state.settings);
+        ov.remove(); renderTab();
+      };
+    }
+    draw();
+    ov.addEventListener('click', e=>{ if(e.target===ov) ov.remove(); });
+  }
+
+
+  function renderFollowups(main){
+    const today=todayStr();
+    const withFu = state.leads.filter(l=>l.followupDate);
+    const sorted = withFu.slice().sort((a,b)=>{ if(a.followupDone!==b.followupDone) return a.followupDone?1:-1; return (a.followupDate||'').localeCompare(b.followupDate||''); });
+    main.innerHTML=`
+      <div class="vc-topbar">
+        <div><div class="vc-title">Follow-ups</div><div class="vc-sub">${withFu.filter(l=>!l.followupDone).length} pending · from Leads</div></div>
+      </div>
+      <div class="vc-panel">
+        ${sorted.length? `
+        <table class="vc-table">
+          <thead><tr><th>Lead</th><th>Product Required</th><th>Number</th><th>Follow-up Date</th><th>Status</th><th></th></tr></thead>
+          <tbody>${sorted.map(l=>{
+            const clean = cleanPhone(l.phone);
+            let badge='upcoming',label='Upcoming';
+            if(l.followupDone){badge='done';label='Done';}
+            else if(l.followupDate<today){badge='overdue';label='Overdue';}
+            else if(l.followupDate===today){badge='today';label='Today';}
+            return `<tr>
+              <td><b>${escapeHtml(l.name)}</b></td>
+              <td>${escapeHtml(l.product||l.interest||'-')}</td>
+              <td>${escapeHtml(l.phone||'-')}</td>
+              <td>${fmtDate(l.followupDate)}</td>
+              <td><span class="vc-badge ${badge}">${label}</span></td>
+              <td style="text-align:right;white-space:nowrap;">
+                ${clean?`<a class="vc-iconbtn" href="tel:+91${clean}" title="Call">${ICONS.phone}</a>
+                <a class="vc-iconbtn wa" href="https://wa.me/91${clean}" target="_blank" title="WhatsApp">${ICONS.chat}</a>`:''}
+                ${!l.followupDone?`<button class="vc-btn ghost sm" data-fudone="${l.id}" style="margin-left:4px;">Mark Done</button>`:''}
+                ${isAdmin()?`<button class="vc-btn danger sm" data-fuclear="${l.id}" style="margin-left:4px;">Remove</button>`:''}
+              </td>
+            </tr>`;
+          }).join('')}</tbody>
+        </table>` : `<div class="vc-empty"><b>No follow-ups</b>Set a follow-up date on a lead (Leads tab) to see it here.</div>`}
+      </div>
+    `;
+    main.querySelectorAll('[data-fudone]').forEach(b=>b.onclick=async()=>{
+      state.leads=state.leads.map(l=>l.id===b.dataset.fudone?{...l,followupDone:true}:l);
+      await sSet('crm:leads',state.leads); renderTab();
+    });
+    main.querySelectorAll('[data-fuclear]').forEach(b=>b.onclick=async()=>{
+      if(!isAdmin())return;
+      if(!confirm('Remove this follow-up date from the lead?'))return;
+      state.leads=state.leads.map(l=>l.id===b.dataset.fuclear?{...l,followupDate:null,followupDone:false}:l);
+      await sSet('crm:leads',state.leads); renderTab();
+    });
+  }
+
+  // ---------------- REPORTS (admin only) ----------------
+  function renderReports(main){
+    // Sales by state (via customer's state)
+    const salesByState = {};
+    state.sales.forEach(s=>{
+      const cust = state.customers.find(c=>c.id===s.customerId);
+      const st = (cust && cust.state) ? cust.state : 'Unknown';
+      if(!salesByState[st]) salesByState[st] = {revenue:0, orders:0};
+      salesByState[st].revenue += Number(s.amount||0);
+      salesByState[st].orders += 1;
+    });
+    const stateRows = Object.keys(salesByState).sort((a,b)=>salesByState[b].revenue-salesByState[a].revenue);
+    const maxRevenue = Math.max(1, ...stateRows.map(s=>salesByState[s].revenue));
+
+    // Leads by state
+    const leadsByState = {};
+    state.leads.forEach(l=>{
+      const st = l.state || 'Unknown';
+      if(!leadsByState[st]) leadsByState[st] = {total:0, orderDone:0};
+      leadsByState[st].total += 1;
+      if(l.status==='order-done') leadsByState[st].orderDone += 1;
+    });
+    const leadStateRows = Object.keys(leadsByState).sort((a,b)=>leadsByState[b].total-leadsByState[a].total);
+
+    // B2B vs B2C split
+    const b2bRevenue = state.sales.reduce((sum,s)=>{
+      const cust = state.customers.find(c=>c.id===s.customerId);
+      return sum + (cust && cust.type==='B2B' ? Number(s.amount||0) : 0);
+    },0);
+    const b2cRevenue = state.sales.reduce((sum,s)=>sum+Number(s.amount||0),0) - b2bRevenue;
+
+    main.innerHTML = `
+      <div class="vc-topbar">
+        <div><div class="vc-title">Reports</div><div class="vc-sub">Orders &amp; leads across India, by state</div></div>
+      </div>
+
+      <div class="vc-cards" style="margin-bottom:20px;">
+        <div class="vc-card"><div class="vc-card-icon">${ICONS.rupee}</div><div class="vc-card-label">B2B Revenue</div><div class="vc-card-val">${fmtMoney(b2bRevenue)}</div></div>
+        <div class="vc-card"><div class="vc-card-icon amber">${ICONS.rupee}</div><div class="vc-card-label">B2C Revenue</div><div class="vc-card-val">${fmtMoney(b2cRevenue)}</div></div>
+        <div class="vc-card"><div class="vc-card-icon blue">${ICONS.target}</div><div class="vc-card-label">States with Leads</div><div class="vc-card-val">${leadStateRows.length}</div></div>
+        <div class="vc-card"><div class="vc-card-icon">${ICONS.trend}</div><div class="vc-card-label">States with Orders</div><div class="vc-card-val">${stateRows.length}</div></div>
+      </div>
+
+      <div class="vc-panel">
+        <div class="vc-panel-title">Order Revenue by State</div>
+        ${stateRows.length? stateRows.map(st=>`
+          <div style="margin-bottom:12px;">
+            <div style="display:flex;justify-content:space-between;font-size:12.5px;margin-bottom:4px;">
+              <span><b>${escapeHtml(st)}</b> <span style="color:var(--muted);">· ${salesByState[st].orders} order${salesByState[st].orders===1?'':'s'}</span></span>
+              <b>${fmtMoney(salesByState[st].revenue)}</b>
+            </div>
+            <div style="background:#F0EFE4;border-radius:6px;height:8px;overflow:hidden;">
+              <div style="background:var(--leaf);height:100%;width:${(salesByState[st].revenue/maxRevenue*100).toFixed(1)}%;"></div>
+            </div>
+          </div>
+        `).join('') : `<div class="vc-empty">No sales recorded yet</div>`}
+      </div>
+
+      <div class="vc-panel">
+        <div class="vc-panel-title">Leads by State</div>
+        ${leadStateRows.length? `
+        <table class="vc-table">
+          <thead><tr><th>State</th><th>Total Leads</th><th>Orders Done</th><th>Conversion</th></tr></thead>
+          <tbody>${leadStateRows.map(st=>{
+            const d = leadsByState[st];
+            const conv = d.total? ((d.orderDone/d.total)*100).toFixed(0) : 0;
+            return `<tr><td><b>${escapeHtml(st)}</b></td><td>${d.total}</td><td>${d.orderDone}</td><td>${conv}%</td></tr>`;
+          }).join('')}</tbody>
+        </table>` : `<div class="vc-empty">No leads recorded yet</div>`}
+      </div>
+    `;
+  }
+
+
+  function renderSettings(main){
+    const s = state.settings;
+    const me = users.find(u=>u.username===session.username);
+    main.innerHTML = `
+      <div class="vc-topbar">
+        <div><div class="vc-title">Settings</div><div class="vc-sub">Company profile, team, and preferences</div></div>
+      </div>
+
+      <div class="vc-panel">
+        <div class="vc-panel-title">Company Profile <button class="vc-btn ghost sm" id="editSettings">Edit Details</button></div>
+        <div style="display:flex;gap:16px;align-items:flex-start;">
+          <div>
+            <div id="logoPreview" style="width:64px;height:64px;border-radius:12px;background:var(--leaf-soft);display:flex;align-items:center;justify-content:center;overflow:hidden;color:var(--leaf);margin-bottom:6px;">
+              ${s.logo?`<img src="${s.logo}" style="width:100%;height:100%;object-fit:cover;"/>`:ICONS.leaf}
+            </div>
+            <input id="f_logo" type="file" accept="image/*" style="font-size:10px;width:90px;"/>
+            <div style="font-size:9.5px;color:var(--muted);margin-top:2px;">Logo</div>
+          </div>
+          <div style="font-size:12px;color:var(--ink-soft);line-height:1.9;flex:1;">
+            <b>${escapeHtml(s.name)}</b> — ${escapeHtml(s.tagline)}<br/>
+            ${s.address?escapeHtml(s.address)+'<br/>':''}
+            ${(s.mobile1||s.mobile2)?'Mobile: '+escapeHtml([s.mobile1,s.mobile2].filter(Boolean).join(' / '))+'<br/>':'<span style="color:var(--amber);">⚠ Mobile numbers not set</span><br/>'}
+            ${s.gstin?'GSTIN: '+escapeHtml(s.gstin)+'<br/>':'<span style="color:var(--amber);">⚠ Company GSTIN not set</span><br/>'}
+            ${s.accountNo?'Bank A/C: '+escapeHtml(s.accountNo)+'<br/>':'<span style="color:var(--amber);">⚠ Bank details not set</span><br/>'}
+            Default GST: ${s.gstPercent}% · Validity: ${s.validityDays} days · Next Quotation No.: ${escapeHtml(nextQuotationNo())}
+          </div>
+        </div>
+        <div style="display:flex;gap:16px;align-items:center;margin-top:18px;padding-top:16px;border-top:1px solid var(--line);">
+          <div id="heroPreview" style="width:96px;height:64px;border-radius:10px;background:var(--leaf-soft);overflow:hidden;flex-shrink:0;display:flex;align-items:center;justify-content:center;color:var(--leaf);">
+            ${s.heroPhoto?`<img src="${s.heroPhoto}" style="width:100%;height:100%;object-fit:cover;"/>`:ICONS.image}
+          </div>
+          <div style="flex:1;">
+            <div style="font-size:12px;color:var(--ink);font-weight:600;margin-bottom:4px;">Login Page Background Photo</div>
+            <input id="f_hero" type="file" accept="image/*" style="font-size:10px;"/>
+          </div>
+        </div>
+      </div>
+
+      <div class="vc-panel">
+        <div class="vc-panel-title">Team / Employees <button class="vc-btn ghost sm" id="addU">+ Add Employee</button></div>
+        <table class="vc-table">
+          <thead><tr><th>Name</th><th>Username</th><th>Role</th><th>Monthly Target</th><th></th></tr></thead>
+          <tbody>${users.map(u=>`
+            <tr>
+              <td><b>${escapeHtml(u.name)}</b></td>
+              <td>${escapeHtml(u.username)}</td>
+              <td><span class="vc-badge ${u.role==='admin'?'won':'upcoming'}">${u.role==='admin'?'owner':'employee'}</span></td>
+              <td>${fmtMoney(u.monthlyTarget||0)}</td>
+              <td style="text-align:right;white-space:nowrap;">
+                <button class="vc-btn ghost sm" data-target="${u.id}">Set Target</button>
+                ${u.role==='admin'?'':`<button class="vc-btn danger sm" data-deluser="${u.id}">Remove</button>`}
+              </td>
+            </tr>`).join('')}</tbody>
+        </table>
+      </div>
+
+      <div class="vc-panel">
+        <div class="vc-panel-title">Lead Routing Rules <button class="vc-btn ghost sm" id="addRule">+ Add Rule</button></div>
+        <div style="font-size:11.5px;color:var(--muted);margin-bottom:10px;">New leads matching a rule are auto-assigned to that specialist, unless someone is picked manually.</div>
+        ${state.routingRules.length? `
+        <table class="vc-table">
+          <thead><tr><th>State</th><th>Product Keyword</th><th>Assign To</th><th></th></tr></thead>
+          <tbody>${state.routingRules.map(r=>`
+            <tr>
+              <td>${r.state?escapeHtml(r.state):'<span style="color:var(--muted);">Any</span>'}</td>
+              <td>${r.productKeyword?escapeHtml(r.productKeyword):'<span style="color:var(--muted);">Any</span>'}</td>
+              <td><b>${escapeHtml((users.find(u=>u.username===r.assignTo)||{}).name||r.assignTo)}</b></td>
+              <td style="text-align:right;"><button class="vc-btn danger sm" data-delrule="${r.id}">Delete</button></td>
+            </tr>`).join('')}</tbody>
+        </table>` : `<div class="vc-empty">No routing rules yet — new leads stay unassigned unless picked manually.</div>`}
+      </div>
+
+      <div class="vc-panel">
+        <div class="vc-panel-title">My Account</div>
+        <div style="font-size:12px;color:var(--ink-soft);line-height:1.9;margin-bottom:12px;">
+          <b>${escapeHtml(session.name||session.username)}</b> — ${escapeHtml(session.username)}<br/>
+          ${me&&me.mobile?'Mobile: '+escapeHtml(me.mobile):'<span style="color:var(--amber);">⚠ No mobile number saved</span>'}
+        </div>
+        <button class="vc-btn ghost sm" id="pwdBtn">${ICONS.lock} Change Password via OTP</button>
+      </div>
+
+      <div class="vc-panel">
+        <div class="vc-panel-title">Notifications</div>
+        <div style="font-size:12px;color:var(--ink-soft);margin-bottom:12px;">
+          Follow-up banner: <b>${state.notifPrefs.followup?'On':'Off'}</b> · New-lead highlight: <b>${state.notifPrefs.newLead?'On':'Off'}</b>
+        </div>
+        <button class="vc-btn ghost sm" id="notifBtn">${ICONS.bell} Edit Notification Preferences</button>
+      </div>
+
+      <div class="vc-panel">
+        <div class="vc-panel-title">What employees can't do</div>
+        <div style="font-size:12.5px;color:var(--ink-soft);line-height:1.9;">
+          ${ICONS.lock} Can't see Total Revenue, Collected or Pending Payments figures<br/>
+          ${ICONS.lock} Can't delete customers, leads, orders, products or follow-ups<br/>
+          ${ICONS.lock} Can't add, edit or price products — view only<br/>
+          ${ICONS.lock} Can't manage the team<br/>
+          They can still add and update customers, leads, orders and follow-ups day to day.
+        </div>
+      </div>
+    `;
+    document.getElementById('editSettings').onclick=()=>companySettingsModal();
+    document.getElementById('pwdBtn').onclick=()=>changePasswordOtpModal();
+    document.getElementById('notifBtn').onclick=()=>notifPrefsModal();
+    document.getElementById('f_logo').onchange=(e)=>{
+      const file = e.target.files[0];
+      if(!file) return;
+      openImageCropModal(file, { title:'Adjust Your Logo', settingsKey:'logo', aspectRatio:1, outputWidth:300, outputHeight:300, format:'image/png' });
+      e.target.value = '';
+    };
+    document.getElementById('f_hero').onchange=(e)=>{
+      const file = e.target.files[0];
+      if(!file) return;
+      openImageCropModal(file, { title:'Adjust Login Background Photo', settingsKey:'heroPhoto', aspectRatio:4/5, outputWidth:800, outputHeight:1000, format:'image/jpeg' });
+      e.target.value = '';
+    };
+    document.getElementById('addRule').onclick=()=>{
+      const employees = users;
+      if(employees.length===0){alert('Add an employee first.');return;}
+      const ov=document.createElement('div'); ov.className='vc-overlay';
+      ov.innerHTML=`<div class="vc-modal"><h3>Add Routing Rule</h3>
+        <div class="vc-field"><label>State <span style="font-weight:400;color:var(--muted);">(leave blank for any)</span></label><input id="f_rstate" placeholder="e.g. Gujarat"/></div>
+        <div class="vc-field"><label>Product Keyword <span style="font-weight:400;color:var(--muted);">(leave blank for any)</span></label><input id="f_rprod" placeholder="e.g. Premium Package"/></div>
+        <div class="vc-field"><label>Assign To *</label><select id="f_rassign">${employees.map(u=>`<option value="${u.username}">${escapeHtml(u.name)}</option>`).join('')}</select></div>
+        <div class="vc-modal-actions"><button class="vc-btn ghost" id="cx">Cancel</button><button class="vc-btn" id="sx">Save Rule</button></div></div>`;
+      document.body.appendChild(ov);
+      ov.onclick=e=>{if(e.target===ov)ov.remove();};
+      ov.querySelector('#cx').onclick=()=>ov.remove();
+      ov.querySelector('#sx').onclick=async()=>{
+        state.routingRules.push({
+          id:uid(),
+          state: ov.querySelector('#f_rstate').value.trim(),
+          productKeyword: ov.querySelector('#f_rprod').value.trim(),
+          assignTo: ov.querySelector('#f_rassign').value
+        });
+        await sSet('crm:routingRules', state.routingRules);
+        ov.remove(); renderTab();
+      };
+    };
+    main.querySelectorAll('[data-delrule]').forEach(b=>b.onclick=async()=>{
+      if(!confirm('Delete this routing rule?'))return;
+      state.routingRules = state.routingRules.filter(r=>r.id!==b.dataset.delrule);
+      await sSet('crm:routingRules', state.routingRules); renderTab();
+    });
+    main.querySelectorAll('[data-target]').forEach(b=>b.onclick=()=>{
+      const u = users.find(x=>x.id===b.dataset.target);
+      if(!u) return;
+      const ov=document.createElement('div'); ov.className='vc-overlay';
+      ov.innerHTML=`<div class="vc-modal" style="width:320px;"><h3>Set Monthly Target</h3>
+        <div class="vc-field"><label>${escapeHtml(u.name)} — Target (₹)</label><input id="f_tgt" type="number" value="${u.monthlyTarget||0}"/></div>
+        <div class="vc-modal-actions"><button class="vc-btn ghost" id="cx">Cancel</button><button class="vc-btn" id="sx">Save</button></div></div>`;
+      document.body.appendChild(ov);
+      ov.onclick=e=>{if(e.target===ov)ov.remove();};
+      ov.querySelector('#cx').onclick=()=>ov.remove();
+      ov.querySelector('#sx').onclick=async()=>{
+        users = users.map(x=>x.id===u.id?{...x, monthlyTarget:Number(ov.querySelector('#f_tgt').value||0)}:x);
+        await sSet('crm:users', users);
+        ov.remove(); renderTab();
+      };
+    });
+    document.getElementById('addU').onclick=()=>{
+      const ov=document.createElement('div'); ov.className='vc-overlay';
+      ov.innerHTML=`<div class="vc-modal"><h3>Add Employee</h3>
+        <div class="vc-field"><label>Name *</label><input id="f_n"/></div>
+        <div class="vc-field"><label>Username *</label><input id="f_u"/></div>
+        <div class="vc-field"><label>Password *</label><input id="f_p" type="password"/></div>
+        <div class="vc-modal-actions"><button class="vc-btn ghost" id="cx">Cancel</button><button class="vc-btn" id="sx">Save</button></div></div>`;
+      document.body.appendChild(ov);
+      ov.onclick=e=>{if(e.target===ov)ov.remove();};
+      ov.querySelector('#cx').onclick=()=>ov.remove();
+      ov.querySelector('#sx').onclick=async()=>{
+        const name=ov.querySelector('#f_n').value.trim();
+        const uname=ov.querySelector('#f_u').value.trim();
+        const pass=ov.querySelector('#f_p').value;
+        if(!name||!uname||!pass){alert('Name, username and password are required');return;}
+        if(users.some(u=>u.username===uname)){alert('This username is already taken');return;}
+        users.push({id:uid(),username:uname,password:pass,name,role:'employee'});
+        await sSet('crm:users',users); ov.remove(); renderTab();
+      };
+    };
+    main.querySelectorAll('[data-deluser]').forEach(b=>b.onclick=async()=>{
+      if(!confirm('Remove this employee access?'))return;
+      users=users.filter(u=>u.id!==b.dataset.deluser);
+      await sSet('crm:users',users); renderTab();
+    });
+  }
+
+  function companySettingsModal(){
+    const s = state.settings;
+    const ov=document.createElement('div'); ov.className='vc-overlay';
+    ov.innerHTML=`<div class="vc-modal" style="width:460px;"><h3>Company &amp; Quotation Settings</h3>
+      <div class="vc-field"><label>Company Name</label><input id="f_name" value="${escapeHtml(s.name)}"/></div>
+      <div class="vc-field"><label>Tagline</label><input id="f_tag" value="${escapeHtml(s.tagline)}"/></div>
+      <div class="vc-field"><label>Business Line <span style="font-weight:400;color:var(--muted);">(e.g. what you sell/do)</span></label><input id="f_manuf" value="${escapeHtml(s.manufacturerLine)}" placeholder="e.g. Wholesale Textile Trading"/></div>
+      <div class="vc-field"><label>Address</label><input id="f_addr" value="${escapeHtml(s.address)}"/></div>
+      <div style="display:flex;gap:10px;">
+        <div class="vc-field" style="flex:1;"><label>Mobile 1</label><input id="f_m1" value="${escapeHtml(s.mobile1)}"/></div>
+        <div class="vc-field" style="flex:1;"><label>Mobile 2</label><input id="f_m2" value="${escapeHtml(s.mobile2)}"/></div>
+      </div>
+      <div style="display:flex;gap:10px;">
+        <div class="vc-field" style="flex:1;"><label>Email</label><input id="f_email" value="${escapeHtml(s.email)}"/></div>
+        <div class="vc-field" style="flex:1;"><label>Website</label><input id="f_web" value="${escapeHtml(s.website)}"/></div>
+      </div>
+      <div class="vc-field"><label>Company GSTIN</label><input id="f_gstin" value="${escapeHtml(s.gstin)}"/></div>
+      <div style="display:flex;gap:10px;">
+        <div class="vc-field" style="flex:1;"><label>Bank Name</label><input id="f_bank" value="${escapeHtml(s.bankName)}"/></div>
+        <div class="vc-field" style="flex:1;"><label>Branch</label><input id="f_branch" value="${escapeHtml(s.bankBranch)}"/></div>
+      </div>
+      <div class="vc-field"><label>Account Name</label><input id="f_accname" value="${escapeHtml(s.accountName)}"/></div>
+      <div style="display:flex;gap:10px;">
+        <div class="vc-field" style="flex:1;"><label>Account No.</label><input id="f_accno" value="${escapeHtml(s.accountNo)}"/></div>
+        <div class="vc-field" style="flex:1;"><label>IFSC</label><input id="f_ifsc" value="${escapeHtml(s.ifsc)}"/></div>
+      </div>
+      <div class="vc-field"><label>Booking Note</label><textarea id="f_booking">${escapeHtml(s.bookingNote)}</textarea></div>
+      <div style="display:flex;gap:10px;">
+        <div class="vc-field" style="flex:1;"><label>Default GST %</label><input id="f_gstp" type="number" value="${s.gstPercent}"/></div>
+        <div class="vc-field" style="flex:1;"><label>Default Validity (days)</label><input id="f_val" type="number" value="${s.validityDays}"/></div>
+      </div>
+      <div class="vc-field"><label>Default Payment Terms</label><input id="f_pay" value="${escapeHtml(s.paymentTerms)}"/></div>
+      <div class="vc-field"><label>Low Stock Alert Threshold <span style="font-weight:400;color:var(--muted);">(warn when stock ≤ this)</span></label><input id="f_lowstock" type="number" value="${s.lowStockThreshold!=null?s.lowStockThreshold:5}"/></div>
+      <div class="vc-field"><label>Quotation Number Prefix</label><input id="f_prefix" value="${escapeHtml(s.quotationPrefix)}"/></div>
+      <div class="vc-field"><label>Terms &amp; Conditions <span style="font-weight:400;color:var(--muted);">(one per line)</span></label>
+        <textarea id="f_terms" style="min-height:110px;">${escapeHtml((s.terms||[]).join('\n'))}</textarea>
+      </div>
+      <div class="vc-modal-actions"><button class="vc-btn ghost" id="cx">Cancel</button><button class="vc-btn" id="sx">Save Settings</button></div>
+    </div>`;
+    document.body.appendChild(ov);
+    ov.onclick=e=>{if(e.target===ov)ov.remove();};
+    ov.querySelector('#cx').onclick=()=>ov.remove();
+    ov.querySelector('#sx').onclick=async()=>{
+      state.settings = {
+        ...state.settings,
+        name: ov.querySelector('#f_name').value.trim() || DEFAULT_SETTINGS.name,
+        tagline: ov.querySelector('#f_tag').value.trim(),
+        manufacturerLine: ov.querySelector('#f_manuf').value.trim(),
+        address: ov.querySelector('#f_addr').value.trim(),
+        mobile1: ov.querySelector('#f_m1').value.trim(),
+        mobile2: ov.querySelector('#f_m2').value.trim(),
+        email: ov.querySelector('#f_email').value.trim(),
+        website: ov.querySelector('#f_web').value.trim(),
+        gstin: ov.querySelector('#f_gstin').value.trim(),
+        bankName: ov.querySelector('#f_bank').value.trim(),
+        bankBranch: ov.querySelector('#f_branch').value.trim(),
+        accountName: ov.querySelector('#f_accname').value.trim(),
+        accountNo: ov.querySelector('#f_accno').value.trim(),
+        ifsc: ov.querySelector('#f_ifsc').value.trim(),
+        bookingNote: ov.querySelector('#f_booking').value.trim(),
+        gstPercent: Number(ov.querySelector('#f_gstp').value||12),
+        validityDays: Number(ov.querySelector('#f_val').value||7),
+        lowStockThreshold: Number(ov.querySelector('#f_lowstock').value||5),
+        paymentTerms: ov.querySelector('#f_pay').value.trim(),
+        quotationPrefix: ov.querySelector('#f_prefix').value.trim(),
+        terms: ov.querySelector('#f_terms').value.split('\n').map(t=>t.trim()).filter(Boolean),
+      };
+      await sSet('crm:settings', state.settings);
+      ov.remove(); renderTab();
+    };
+  }
+
+  boot();
+})();
+</script>
+</body>
+</html>
